@@ -1,0 +1,380 @@
+// Modern Button Component Styles using CSS Custom Properties
+// This approach provides runtime theming, better performance, and cleaner code
+
+@use 'sass:map';
+
+.button {
+  // CSS Custom Properties for theming
+  --btn-padding-x: 1rem;
+  --btn-padding-y: 0.5rem;
+  --btn-font-size: 1rem;
+  --btn-font-weight: 500;
+  --btn-line-height: 1.5;
+  --btn-border-radius: 0.5rem;
+  --btn-border-width: 2px;
+  --btn-transition-duration: 200ms;
+  --btn-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Color properties (set by variants)
+  --btn-bg: var(--color-primary-500);
+  --btn-bg-hover: var(--color-primary-600);
+  --btn-bg-active: var(--color-primary-700);
+  --btn-color: var(--color-white);
+  --btn-border-color: transparent;
+  --btn-shadow-color: var(--color-primary-500);
+  --btn-focus-ring-color: var(--color-primary-500);
+  --btn-focus-ring-offset: 2px;
+  
+  // Base styles
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  line-height: var(--btn-line-height);
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: var(--btn-border-width) solid var(--btn-border-color);
+  border-radius: var(--btn-border-radius);
+  background-color: var(--btn-bg);
+  color: var(--btn-color);
+  cursor: pointer;
+  transition: all var(--btn-transition-duration) var(--btn-transition-timing);
+  transition-property: background-color, border-color, color, box-shadow, transform;
+  
+  // Modern touch-friendly tap target
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  
+  // Remove default button styles
+  appearance: none;
+  -webkit-appearance: none;
+  
+  // Hover state
+  &:hover:not(:disabled) {
+    background-color: var(--btn-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  // Active state
+  &:active:not(:disabled) {
+    background-color: var(--btn-bg-active);
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  // Focus state with modern focus-visible
+  &:focus-visible {
+    outline: none;
+    box-shadow: 
+      0 0 0 var(--btn-focus-ring-offset) var(--color-white),
+      0 0 0 calc(var(--btn-focus-ring-offset) + 3px) var(--btn-focus-ring-color);
+  }
+  
+  // Disabled state
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  // Reduce motion for accessibility
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0.01ms;
+    transform: none;
+  }
+  
+  // High contrast mode support
+  @media (prefers-contrast: high) {
+    border-width: 3px;
+    font-weight: 600;
+  }
+}
+
+// Size variants using @each loop and BEM modifiers
+$sizes: (
+  small: (
+    padding-x: 0.75rem,
+    padding-y: 0.375rem,
+    font-size: 0.875rem,
+    border-radius: 0.375rem,
+    min-height: 36px
+  ),
+  large: (
+    padding-x: 1.5rem,
+    padding-y: 0.75rem,
+    font-size: 1.125rem,
+    border-radius: 0.625rem,
+    min-height: 52px
+  )
+);
+
+@each $size, $properties in $sizes {
+  .button {
+    &--#{$size},
+    &[data-size="#{$size}"] {
+      --btn-padding-x: #{map.get($properties, padding-x)};
+      --btn-padding-y: #{map.get($properties, padding-y)};
+      --btn-font-size: #{map.get($properties, font-size)};
+      --btn-border-radius: #{map.get($properties, border-radius)};
+      min-height: #{map.get($properties, min-height)};
+    }
+  }
+}
+
+// Variant styles using @each loop and BEM modifiers
+$variants: (
+  primary: (
+    bg: var(--color-primary-600),
+    bg-hover: var(--color-primary-700),
+    bg-active: var(--color-primary-800),
+    color: var(--color-surface),
+    border-color: transparent,
+    focus-ring-color: var(--color-primary-500)
+  ),
+  secondary: (
+    bg: var(--color-surface-secondary),
+    bg-hover: var(--color-surface-tertiary),
+    bg-active: var(--color-border-secondary),
+    color: var(--color-text),
+    border-color: var(--color-border),
+    focus-ring-color: var(--color-border-tertiary)
+  ),
+  success: (
+    bg: var(--color-success-600),
+    bg-hover: var(--color-success-700),
+    bg-active: var(--color-success-800),
+    color: var(--color-surface),
+    border-color: transparent,
+    focus-ring-color: var(--color-success-500)
+  ),
+  danger: (
+    bg: var(--color-danger-600),
+    bg-hover: var(--color-danger-700),
+    bg-active: var(--color-danger-800),
+    color: var(--color-surface),
+    border-color: transparent,
+    focus-ring-color: var(--color-danger-500)
+  )
+);
+
+@each $variant, $properties in $variants {
+  .button {
+    &--#{$variant},
+    &[data-variant="#{$variant}"] {
+      --btn-bg: #{map.get($properties, bg)};
+      --btn-bg-hover: #{map.get($properties, bg-hover)};
+      --btn-bg-active: #{map.get($properties, bg-active)};
+      --btn-color: #{map.get($properties, color)};
+      --btn-border-color: #{map.get($properties, border-color)};
+      --btn-focus-ring-color: #{map.get($properties, focus-ring-color)};
+    }
+  }
+}
+
+// Special variant styles (ghost and outline)
+$special-variants: (
+  ghost: (
+    bg: transparent,
+    bg-hover: var(--color-hover-overlay),
+    bg-active: var(--color-active-overlay),
+    color: var(--color-primary-600),
+    border-color: transparent,
+    focus-ring-color: var(--color-primary-500),
+    no-shadow: true
+  ),
+  outline: (
+    bg: transparent,
+    bg-hover: var(--color-primary-50),
+    bg-active: var(--color-primary-100),
+    color: var(--color-primary-600),
+    border-color: var(--color-primary-300),
+    focus-ring-color: var(--color-primary-500),
+    no-shadow: true
+  )
+);
+
+@each $variant, $properties in $special-variants {
+  .button {
+    &--#{$variant},
+    &[data-variant="#{$variant}"] {
+      --btn-bg: #{map.get($properties, bg)};
+      --btn-bg-hover: #{map.get($properties, bg-hover)};
+      --btn-bg-active: #{map.get($properties, bg-active)};
+      --btn-color: #{map.get($properties, color)};
+      --btn-border-color: #{map.get($properties, border-color)};
+      --btn-focus-ring-color: #{map.get($properties, focus-ring-color)};
+      
+      @if map.get($properties, no-shadow) {
+        &:hover:not(:disabled) {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+// Button state modifiers using BEM
+.button {
+  // Loading state
+  &--loading,
+  &[data-loading="true"] {
+    pointer-events: none;
+    
+    .button__text {
+      visibility: hidden;
+    }
+    
+    .button__spinner {
+      color: var(--btn-color);
+    }
+  }
+  
+  // Full width modifier
+  &--full-width,
+  &[data-full-width="true"] {
+    width: 100%;
+  }
+  
+  // Icon-only modifier
+  &--icon-only,
+  &[data-icon-only="true"] {
+    --btn-padding-x: var(--btn-padding-y);
+    aspect-ratio: 1;
+  }
+}
+
+// Button elements using BEM
+.button {
+  // Icon element
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25em;
+    height: 1.25em;
+    flex-shrink: 0;
+  }
+  
+  // Spinner element
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    
+    &::after {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 2px solid currentColor;
+      border-color: currentColor transparent currentColor transparent;
+      border-radius: 50%;
+      animation: button-spin 0.8s linear infinite;
+    }
+  }
+  
+  // Text element
+  &__text {
+    // Optional text wrapper for better control
+  }
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Button group component using BEM
+.buttonGroup {
+  display: inline-flex;
+  gap: -1px;
+  
+  .button {
+    border-radius: 0;
+    
+    &:first-child {
+      border-top-left-radius: var(--btn-border-radius);
+      border-bottom-left-radius: var(--btn-border-radius);
+    }
+    
+    &:last-child {
+      border-top-right-radius: var(--btn-border-radius);
+      border-bottom-right-radius: var(--btn-border-radius);
+    }
+    
+    &:focus-visible {
+      z-index: 1;
+    }
+  }
+}
+
+// Responsive sizing
+@container (max-width: 480px) {
+  .button {
+    --btn-padding-x: 0.875rem;
+    --btn-font-size: 0.9375rem;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .button[data-variant="secondary"] {
+    --btn-bg: hsl(0, 0%, 20%);
+    --btn-bg-hover: hsl(0, 0%, 25%);
+    --btn-bg-active: hsl(0, 0%, 30%);
+    --btn-color: hsl(0, 0%, 90%);
+  }
+  
+  .button[data-variant="outline"],
+  .button[data-variant="ghost"] {
+    --btn-bg-hover: hsla(0, 0%, 100%, 0.08);
+    --btn-bg-active: hsla(0, 0%, 100%, 0.12);
+  }
+}
+
+// Utility classes using BEM
+.button {
+  // Screen reader only text
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+// Legacy class names for compatibility
+.icon {
+  @extend .button__icon;
+}
+
+.spinner {
+  @extend .button__spinner;
+}
+
+.text {
+  @extend .button__text;
+}
+
+.srOnly {
+  @extend .button__sr-only;
+}

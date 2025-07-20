@@ -1,0 +1,427 @@
+// =============================================================================
+// MODERN CLOCK COMPONENT STYLES
+// =============================================================================
+
+@use '../../styles/base.scss' as *;
+
+// =============================================================================
+// CLOCK CONTAINER
+// =============================================================================
+
+.clock {
+  @include flex-column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-2xl);
+  background: linear-gradient(135deg, var(--color-surface), var(--color-surface-secondary));
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--border-radius-2xl);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+  min-width: 320px;
+  @include transition();
+  
+  // Animated background effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.03) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    z-index: 0;
+  }
+  
+  // All content above the animated background
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+    }
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-xl);
+    min-width: 280px;
+  }
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, var(--color-surface), var(--color-surface-tertiary));
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =============================================================================
+// CLOCK DISPLAY
+// =============================================================================
+
+.display {
+  @include flex-column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+}
+
+.date {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+  
+  @include mobile-only {
+    font-size: var(--text-base);
+  }
+}
+
+.time {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  letter-spacing: -2px;
+  line-height: 1;
+  
+  // Digital clock styling
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  
+  @include high-contrast {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    background-clip: unset;
+    color: var(--color-text);
+  }
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-200));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.status {
+  @include flex-center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface-secondary);
+  border-radius: var(--border-radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  @include transition();
+}
+
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  @include transition();
+  
+  &[data-running="true"] {
+    background: var(--color-success-500);
+    box-shadow: 0 0 8px rgba(var(--color-success-rgb), 0.4);
+  }
+  
+  &[data-running="false"] {
+    background: var(--color-danger-500);
+    box-shadow: 0 0 8px rgba(var(--color-danger-rgb), 0.4);
+  }
+}
+
+// =============================================================================
+// CONTROLS
+// =============================================================================
+
+.controls {
+  @include flex-center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  
+  @include mobile-only {
+    gap: var(--spacing-sm);
+  }
+}
+
+.controlButton {
+  @include flex-center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  @include transition();
+  @include touch-target;
+  
+  &:hover {
+    background: var(--color-hover-overlay);
+    border-color: var(--color-primary-300);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &[data-variant="primary"] {
+    background: var(--color-primary-600);
+    color: var(--color-white);
+    border-color: var(--color-primary-600);
+    
+    &:hover {
+      background: var(--color-primary-700);
+      border-color: var(--color-primary-700);
+    }
+  }
+  
+  &[data-variant="danger"] {
+    background: var(--color-danger-600);
+    color: var(--color-white);
+    border-color: var(--color-danger-600);
+    
+    &:hover {
+      background: var(--color-danger-700);
+      border-color: var(--color-danger-700);
+    }
+  }
+  
+  &[data-variant="success"] {
+    background: var(--color-success-600);
+    color: var(--color-white);
+    border-color: var(--color-success-600);
+    
+    &:hover {
+      background: var(--color-success-700);
+      border-color: var(--color-success-700);
+    }
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--text-xs);
+  }
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+}
+
+// =============================================================================
+// CLOCK INFO
+// =============================================================================
+
+.info {
+  @include flex-center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+  
+  @include mobile-only {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}
+
+.infoBadge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-surface-secondary);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+// =============================================================================
+// STOPWATCH SPECIFIC STYLES
+// =============================================================================
+
+.stopwatch {
+  @extend .clock;
+  
+  .stopwatchDisplay {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    letter-spacing: -1px;
+    margin: var(--spacing-md) 0;
+  }
+  
+  .stopwatchControls {
+    @extend .controls;
+  }
+}
+
+.laps {
+  width: 100%;
+  max-width: 400px;
+  margin-top: var(--spacing-lg);
+  
+  .lapsHeader {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .lapsList {
+    max-height: 200px;
+    overflow-y: auto;
+    border: var(--border-width-1) solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    background: var(--color-surface);
+  }
+  
+  .lap {
+    @include flex-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: var(--border-width-1) solid var(--color-border);
+    font-size: var(--text-sm);
+    @include transition();
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background: var(--color-hover-overlay);
+    }
+  }
+  
+  .lapIndex {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+  
+  .lapTime {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+  }
+}
+
+// =============================================================================
+// TIMEZONE SELECTOR
+// =============================================================================
+
+.timezoneSelector {
+  @include flex-center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  
+  .timezoneLabel {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+  }
+  
+  .timezoneSelect {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-surface);
+    border: var(--border-width-1) solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    @include transition();
+    
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary-500);
+      box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+    }
+    
+    &:hover {
+      border-color: var(--color-border-secondary);
+    }
+  }
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN
+// =============================================================================
+
+@include tablet-only {
+  .clock {
+    padding: var(--spacing-xl);
+  }
+  
+  .controls {
+    gap: var(--spacing-sm);
+  }
+}
+
+// =============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// =============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .controlButton {
+    &:hover {
+      transform: none;
+    }
+    
+    &:active {
+      transform: none;
+    }
+  }
+}
+
+// =============================================================================
+// PRINT STYLES
+// =============================================================================
+
+@media print {
+  .clock {
+    background: none;
+    border: var(--border-width-2) solid var(--color-text);
+    box-shadow: none;
+    
+    &::before {
+      display: none;
+    }
+  }
+  
+  .controls {
+    display: none;
+  }
+  
+  .time {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    background-clip: unset;
+    color: var(--color-text);
+  }
+}

@@ -1,0 +1,321 @@
+// =============================================================================
+// SECTION COMPONENT STYLES
+// =============================================================================
+
+@use '../../styles/base.scss' as *;
+
+// =============================================================================
+// BASE SECTION STYLES
+// =============================================================================
+
+.section {
+  width: 100%;
+  margin-bottom: var(--spacing-xl);
+  
+  // Ensure proper spacing between sections
+  & + & {
+    margin-top: var(--spacing-xl);
+  }
+  
+  @include mobile-only {
+    margin-bottom: var(--spacing-lg);
+    
+    & + & {
+      margin-top: var(--spacing-lg);
+    }
+  }
+}
+
+// =============================================================================
+// SECTION HEADING STYLES
+// =============================================================================
+
+.heading {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-lg) 0;
+  line-height: var(--line-height-tight);
+  
+  @include mobile-only {
+    font-size: var(--text-lg);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  // High contrast mode enhancement
+  @include high-contrast {
+    border-bottom: var(--border-width-1) solid var(--color-text);
+    padding-bottom: var(--spacing-sm);
+  }
+}
+
+// =============================================================================
+// SECTION VARIANTS USING SPECIFIED NAMING PATTERN
+// =============================================================================
+
+// Demo variant (default for button demonstrations)
+.variant_section_header__demo {
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  @include transition();
+  
+  @include hover {
+    &:hover {
+      box-shadow: var(--shadow-sm);
+    }
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-md);
+  }
+  
+  @include high-contrast {
+    border-width: var(--border-width-2);
+  }
+}
+
+// Component variant (for showcasing individual components)
+.variant_section_header__component {
+  padding: var(--spacing-xl) 0;
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-lg) 0;
+  }
+}
+
+// Feature variant (for highlighting key features)
+.variant_section_header__feature {
+  padding: var(--spacing-xl);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-50) 0%,
+    var(--color-primary-100) 100%
+  );
+  border: var(--border-width-1) solid var(--color-primary-200);
+  border-radius: var(--border-radius-xl);
+  position: relative;
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-900) 0%,
+      var(--color-primary-800) 100%
+    );
+    border-color: var(--color-primary-700);
+  }
+  
+  .heading {
+    color: var(--color-primary-700);
+    
+    [data-theme="dark"] & {
+      color: var(--color-primary-300);
+    }
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-lg);
+  }
+}
+
+// Interactive variant (for sections with user interactions)
+.variant_section_header__interactive {
+  padding: var(--spacing-lg);
+  background: var(--color-surface-secondary);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  @include transition();
+  
+  &:focus-within {
+    border-color: var(--color-primary-300);
+    box-shadow: var(--shadow-md);
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-md);
+  }
+}
+
+// Minimal variant (clean, minimal styling)
+.variant_section_header__minimal {
+  padding: var(--spacing-md) 0;
+  
+  .heading {
+    margin-bottom: var(--spacing-md);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// Elevated variant (with prominent elevation)
+.variant_section_header__elevated {
+  padding: var(--spacing-xl);
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
+  @include transition();
+  
+  @include hover {
+    &:hover {
+      box-shadow: var(--shadow-xl);
+      // transform: translateY(-2px);
+    }
+  }
+  
+  @include mobile-only {
+    padding: var(--spacing-lg);
+  }
+  
+  @include reduced-motion {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// =============================================================================
+// GROUP CONTAINER VARIANTS
+// =============================================================================
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
+  
+  @include mobile-only {
+    gap: var(--spacing-sm);
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.variant_group__demo {
+  @extend .group;
+  justify-content: flex-start;
+}
+
+.variant_group__feature {
+  @extend .group;
+  justify-content: center;
+}
+
+.variant_group__interactive {
+  @extend .group;
+  justify-content: space-between;
+  
+  @include mobile-only {
+    justify-content: center;
+  }
+}
+
+.variant_group__minimal {
+  @extend .group;
+  gap: var(--spacing-sm);
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN ENHANCEMENTS
+// =============================================================================
+
+@include tablet-only {
+  .section {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .variant_section_header__demo,
+  .variant_section_header__interactive {
+    padding: var(--spacing-lg);
+  }
+  
+  .variant_section_header__feature,
+  .variant_section_header__elevated {
+    padding: var(--spacing-lg);
+  }
+}
+
+@include large-desktop-up {
+  .section {
+    margin-bottom: var(--spacing-2xl);
+  }
+  
+  .variant_section_header__feature,
+  .variant_section_header__elevated {
+    padding: var(--spacing-2xl);
+  }
+}
+
+// =============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// =============================================================================
+
+// Focus improvements for keyboard navigation
+.section:focus-within {
+  .heading {
+    color: var(--color-primary-600);
+    
+    [data-theme="dark"] & {
+      color: var(--color-primary-400);
+    }
+  }
+}
+
+// High contrast mode specific adjustments
+@include high-contrast {
+  .variant_section_header__demo,
+  .variant_section_header__interactive,
+  .variant_section_header__elevated {
+    background: var(--color-background);
+    border-color: var(--color-text);
+  }
+  
+  .variant_section_header__feature {
+    background: var(--color-background);
+    border-color: var(--color-text);
+    
+    .heading {
+      color: var(--color-text);
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .variant_section_header__demo,
+  .variant_section_header__interactive,
+  .variant_section_header__feature,
+  .variant_section_header__elevated {
+    background: none;
+    border: var(--border-width-1) solid var(--color-text);
+    box-shadow: none;
+  }
+}
+
+// =============================================================================
+// ANIMATION SUPPORT
+// =============================================================================
+
+@include reduced-motion {
+  .section,
+  .variant_section_header__demo,
+  .variant_section_header__interactive,
+  .variant_section_header__elevated {
+    transition: none;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+}

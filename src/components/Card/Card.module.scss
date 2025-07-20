@@ -1,0 +1,443 @@
+// Card Component Styles using CSS Custom Properties
+// Dynamic and themeable card system
+
+@use 'sass:map';
+@use '../../styles/base.scss' as *;
+
+.card {
+  // CSS Custom Properties for theming
+  --card-padding: 1.5rem;
+  --card-border-radius: var(--border-radius-lg);
+  --card-border-width: var(--border-width-1);
+  --card-border-color: var(--color-border);
+  --card-bg: var(--color-card-background);
+  --card-shadow: var(--shadow-md);
+  --card-transition: var(--transition-base);
+  
+  // Base styles
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-bg) !important;
+  border: var(--card-border-width) solid var(--card-border-color);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  transition: var(--card-transition);
+  overflow: hidden;
+  
+  // Full height option
+  &[data-full-height="true"] {
+    height: 100%;
+  }
+  
+  // Hoverable state
+  &[data-hoverable="true"]:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  // Clickable state
+  &[data-clickable="true"] {
+    cursor: pointer;
+    
+    &:hover {
+      background-color: var(--color-surface-secondary);
+    }
+    
+    &:active {
+      transform: scale(0.98);
+    }
+    
+    &:focus-visible {
+      @include focus-ring();
+    }
+  }
+}
+
+// Padding variants using @each loop and BEM modifiers
+
+$padding-variants: (
+  none: 0,
+  small: 0.75rem,
+  medium: 1.5rem,
+  large: 2rem
+);
+
+@each $variant, $value in $padding-variants {
+  .card {
+    &--padding-#{$variant},
+    &[data-padding="#{$variant}"] {
+      --card-padding: #{$value};
+    }
+  }
+}
+
+// Elevation variants using @each loop and BEM modifiers
+$elevation-variants: (
+  none: (
+    shadow: none,
+    border-color: var(--color-border-secondary)
+  ),
+  low: (
+    shadow: var(--shadow-sm)
+  ),
+  medium: (
+    shadow: var(--shadow-md)
+  ),
+  high: (
+    shadow: var(--shadow-lg)
+  )
+);
+
+@each $variant, $properties in $elevation-variants {
+  .card {
+    &--elevation-#{$variant},
+    &[data-elevation="#{$variant}"] {
+      --card-shadow: #{map.get($properties, shadow)};
+      
+      @if map.has-key($properties, border-color) {
+        --card-border-color: #{map.get($properties, border-color)};
+      }
+    }
+  }
+}
+
+// Variant styles
+.card[data-variant="default"] {
+  // Default styles already applied
+}
+
+.card[data-variant="bordered"] {
+  --card-shadow: none;
+  --card-border-color: var(--color-border-secondary);
+  --card-border-width: var(--border-width-2);
+}
+
+.card[data-variant="primary"] {
+  --card-border-color: var(--color-primary-500);
+  --card-border-width: var(--border-width-2);
+  
+  .card__header {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-900);
+  }
+}
+
+.card[data-variant="gradient"] {
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+  --card-border-width: 0;
+}
+
+.card[data-variant="dark"] {
+  --card-bg: var(--color-neutral-800);
+  --card-border-color: var(--color-neutral-700);
+  color: var(--color-neutral-100);
+  
+  .card__subtitle,
+  .card__text {
+    color: var(--color-neutral-300);
+  }
+}
+
+// Card subcomponents using BEM elements
+.card {
+  &__header {
+    padding: var(--card-padding);
+    padding-bottom: 0;
+    
+    &:last-child {
+      padding-bottom: var(--card-padding);
+    }
+  }
+  
+  &__body {
+    flex: 1;
+    padding: var(--card-padding);
+    
+    .card__header + & {
+      padding-top: calc(var(--card-padding) / 2);
+    }
+  }
+  
+  &__footer {
+    padding: var(--card-padding);
+    padding-top: 0;
+    border-top: var(--border-width-1) solid var(--card-border-color);
+    
+    &:only-child {
+      padding-top: var(--card-padding);
+    }
+  }
+}
+
+// Legacy class names for compatibility (until components are updated)
+.cardHeader {
+  @extend .card__header;
+}
+
+.cardBody {
+  @extend .card__body;
+}
+
+.cardFooter {
+  @extend .card__footer;
+}
+
+.cardImage {
+  @extend .card__image;
+}
+
+.cardTitle {
+  @extend .card__title;
+}
+
+.cardSubtitle {
+  @extend .card__subtitle;
+}
+
+.cardText {
+  @extend .card__text;
+}
+
+.cardActions {
+  @extend .card__actions;
+}
+
+.cardBadge {
+  @extend .card__badge;
+}
+
+.cardAvatar {
+  @extend .card__avatar;
+}
+
+.card {
+  &__image {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--color-neutral-100);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    
+    &--position-top,
+    &[data-position="top"] {
+      border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
+    }
+    
+    &--position-bottom,
+    &[data-position="bottom"] {
+      border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+    }
+  }
+}
+
+.card {
+  &__title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: inherit;
+  }
+  
+  &__subtitle {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    
+    .card__title + & {
+      margin-top: -0.25rem;
+    }
+  }
+  
+  &__text {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-text);
+    
+    & + & {
+      margin-top: 0.75rem;
+    }
+  }
+}
+
+.card {
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    
+    $alignments: (
+      left: flex-start,
+      center: center,
+      right: flex-end,
+      between: space-between
+    );
+    
+    @each $align, $value in $alignments {
+      &--align-#{$align},
+      &[data-align="#{$align}"] {
+        justify-content: #{$value};
+      }
+    }
+  }
+}
+
+.card {
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    border-radius: 2rem;
+    white-space: nowrap;
+    
+    $badge-variants: (
+      primary: (
+        bg: var(--color-primary-100),
+        color: var(--color-primary-800)
+      ),
+      success: (
+        bg: var(--color-success-100),
+        color: var(--color-success-700)
+      ),
+      warning: (
+        bg: var(--color-warning-100),
+        color: var(--color-warning-700)
+      ),
+      danger: (
+        bg: var(--color-error-100),
+        color: var(--color-error-700)
+      ),
+      info: (
+        bg: var(--color-info-100),
+        color: var(--color-info-700)
+      ),
+      neutral: (
+        bg: var(--color-neutral-100),
+        color: var(--color-neutral-700)
+      )
+    );
+    
+    @each $variant, $properties in $badge-variants {
+      &--#{$variant},
+      &[data-variant="#{$variant}"] {
+        background-color: #{map.get($properties, bg)};
+        color: #{map.get($properties, color)};
+      }
+    }
+  }
+}
+
+.card {
+  &__avatar {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: var(--color-neutral-200);
+    flex-shrink: 0;
+    
+    $avatar-sizes: (
+      small: 2rem,
+      medium: 3rem,
+      large: 4rem,
+      xlarge: 5rem
+    );
+    
+    @each $size, $value in $avatar-sizes {
+      &--#{$size},
+      &[data-size="#{$size}"] {
+        width: #{$value};
+        height: #{$value};
+      }
+    }
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+// Card grid system using BEM and @each
+.card {
+  &-grid {
+    display: grid;
+    gap: 1.5rem;
+    
+    $grid-columns: (
+      1: 1fr,
+      2: repeat(2, 1fr),
+      3: repeat(3, 1fr),
+      4: repeat(4, 1fr),
+      auto: repeat(auto-fill, minmax(300px, 1fr))
+    );
+    
+    @each $cols, $value in $grid-columns {
+      &--cols-#{$cols},
+      &[data-cols="#{$cols}"] {
+        grid-template-columns: #{$value};
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .card-grid {
+    &--cols-3,
+    &--cols-4,
+    &[data-cols="3"],
+    &[data-cols="4"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .card-grid {
+    &--cols-2,
+    &--cols-3,
+    &--cols-4,
+    &[data-cols="2"],
+    &[data-cols="3"],
+    &[data-cols="4"] {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .card {
+    &--padding-large,
+    &[data-padding="large"] {
+      --card-padding: 1.25rem;
+    }
+  }
+}
+
+// Enhanced accessibility and theming
+.card {
+  color: var(--color-text);
+  
+  .card__title {
+    color: var(--color-text);
+  }
+  
+  .card__subtitle {
+    color: var(--color-text-secondary);
+  }
+  
+  .card__text {
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+}

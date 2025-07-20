@@ -1,0 +1,504 @@
+// =============================================================================
+// NAVIGATION COMPONENT STYLES
+// =============================================================================
+
+@use '../../styles/base.scss' as *;
+
+// =============================================================================
+// SKIP LINK (ACCESSIBILITY)
+// =============================================================================
+
+.skipLink {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary-600);
+  color: var(--color-white);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-decoration: none;
+  border-radius: 0 0 var(--border-radius-md) 0;
+  z-index: var(--z-index-sticky);
+  @include transition();
+  
+  &:focus {
+    top: 0;
+  }
+  
+  @include high-contrast {
+    background: var(--color-text);
+    color: var(--color-background);
+  }
+}
+
+// =============================================================================
+// NAV CONTAINER
+// =============================================================================
+
+.nav {
+  position: relative;
+  width: 100%;
+  background: var(--color-surface);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  z-index: var(--z-index-sticky);
+  @include transition();
+  
+  // Fixed navigation
+  &[data-fixed="true"] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    box-shadow: var(--shadow-md);
+  }
+  
+  @include high-contrast {
+    border-bottom-width: var(--border-width-2);
+  }
+}
+
+.navContainer {
+  @include flex-between;
+  max-width: var(--container-lg);
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  height: var(--nav-height, 64px);
+  
+  @include mobile-only {
+    padding: 0 var(--spacing-sm);
+  }
+}
+
+.navContent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+}
+
+.mobileThemeToggle {
+  padding: var(--spacing-md);
+  border-top: var(--border-width-1) solid var(--color-border);
+  margin-top: var(--spacing-md);
+  
+  @include high-contrast {
+    border-top-width: var(--border-width-2);
+  }
+}
+
+// =============================================================================
+// LOGO
+// =============================================================================
+
+.logo {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-decoration: none;
+  @include transition();
+  
+  &:hover {
+    color: var(--color-primary-600);
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+  }
+  
+  @include mobile-only {
+    font-size: var(--text-lg);
+  }
+}
+
+// =============================================================================
+// DESKTOP NAVIGATION
+// =============================================================================
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.navItem {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  @include transition();
+  background: none;
+  border: none;
+  cursor: pointer;
+  height: 100%;
+  
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-hover-overlay);
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+    z-index: 1;
+  }
+  
+  &[aria-current="page"] {
+    color: var(--color-primary-600);
+    
+    [data-theme="dark"] & {
+      color: var(--color-primary-400);
+    }
+  }
+  
+  @include high-contrast {
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// =============================================================================
+// DROPDOWN MENU
+// =============================================================================
+
+.dropdownIcon {
+  @include transition();
+  
+  &[data-open="true"] {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  @include transition();
+  
+  &[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  @include high-contrast {
+    border-width: var(--border-width-2);
+  }
+}
+
+.dropdownLink {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  @include transition();
+  
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-hover-overlay);
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+  }
+}
+
+// =============================================================================
+// MOBILE MENU
+// =============================================================================
+
+.mobileMenuButton {
+  display: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  @include transition();
+  
+  @media (max-width: 640px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+  }
+  
+  // Animated hamburger icon
+  .hamburger {
+    position: relative;
+    width: 24px;
+    height: 20px;
+    
+    span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      border-radius: 2px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:nth-child(1) {
+        top: 0;
+      }
+      
+      &:nth-child(2) {
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      
+      &:nth-child(3) {
+        bottom: 0;
+      }
+    }
+  }
+  
+  // Transform to X when open
+  &[aria-expanded="true"] .hamburger {
+    span:nth-child(1) {
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+    
+    span:nth-child(2) {
+      opacity: 0;
+      transform: translateY(-50%) scale(0);
+    }
+    
+    span:nth-child(3) {
+      bottom: 50%;
+      transform: translateY(50%) rotate(-45deg);
+    }
+  }
+}
+
+.mobileMenu {
+  position: fixed;
+  top: var(--nav-height, 64px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface);
+  border-top: var(--border-width-1) solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  overflow-y: auto;
+  z-index: calc(var(--z-index-sticky) - 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &[data-open="true"] {
+    transform: translateX(0);
+  }
+  
+  // Hide mobile menu on desktop to prevent accessibility issues
+  @media (min-width: 641px) {
+    display: none;
+  }
+  
+  @include high-contrast {
+    border-top-width: var(--border-width-2);
+  }
+}
+
+// Mobile backdrop
+.mobileBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-index-sticky) - 2);
+  animation: fadeIn 0.3s ease;
+  
+  // Hide mobile backdrop on desktop
+  @media (min-width: 641px) {
+    display: none;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+.mobileNavList {
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-md);
+}
+
+.mobileNavItem {
+  margin-bottom: var(--spacing-xs);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.mobileNavLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  @include transition();
+  
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-hover-overlay);
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+  }
+  
+  &[aria-current="page"] {
+    color: var(--color-primary-600);
+    background: var(--color-primary-50);
+    
+    [data-theme="dark"] & {
+      color: var(--color-primary-400);
+      background: var(--color-primary-950);
+    }
+  }
+}
+
+.mobileDropdown {
+  list-style: none;
+  margin: var(--spacing-sm) 0 0 var(--spacing-lg);
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  @include transition();
+  
+  &[data-open="true"] {
+    max-height: 500px;
+  }
+}
+
+.mobileDropdownLink {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  border-radius: var(--border-radius-md);
+  @include transition();
+  
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-hover-overlay);
+  }
+  
+  &:focus-visible {
+    @include focus-ring();
+  }
+}
+
+// =============================================================================
+// RESPONSIVE ADJUSTMENTS
+// =============================================================================
+
+@include tablet-only {
+  .navList {
+    gap: 0;
+  }
+  
+  .navLink {
+    padding: var(--spacing-sm);
+    font-size: var(--text-sm);
+  }
+}
+
+// =============================================================================
+// ANIMATIONS
+// =============================================================================
+
+@include reduced-motion {
+  .dropdown,
+  .mobileMenu,
+  .mobileDropdown {
+    transition: none;
+  }
+  
+  .dropdownIcon {
+    transition: none;
+  }
+}
+
+// =============================================================================
+// PRINT STYLES
+// =============================================================================
+
+@media print {
+  .nav {
+    position: static;
+    box-shadow: none;
+  }
+  
+  .mobileMenuButton {
+    display: none;
+  }
+  
+  .navList {
+    display: flex;
+  }
+  
+  .dropdown {
+    display: none;
+  }
+}

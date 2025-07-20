@@ -1,0 +1,268 @@
+// =============================================================================
+// SCSS MIXINS
+// =============================================================================
+// Reusable mixins for common patterns and accessibility features
+
+// =============================================================================
+// ACCESSIBILITY MIXINS
+// =============================================================================
+
+// Screen reader only content
+@mixin sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+// Focus ring for accessibility
+@mixin focus-ring($color: var(--color-focus), $width: var(--focus-ring-width), $offset: var(--focus-ring-offset)) {
+  outline: $width solid $color;
+  outline-offset: $offset;
+}
+
+// Focus visible only (not on mouse clicks)
+@mixin focus-visible($color: var(--color-focus)) {
+  &:focus {
+    outline: none;
+  }
+  
+  &:focus-visible {
+    @include focus-ring($color);
+  }
+}
+
+// High contrast mode support
+@mixin high-contrast {
+  @media (prefers-contrast: high) {
+    @content;
+  }
+}
+
+// Reduced motion support
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// =============================================================================
+// LAYOUT MIXINS
+// =============================================================================
+
+// Flexbox utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Container with max-width and centering
+@mixin container($max-width: var(--container-full)) {
+  width: 100%;
+  max-width: $max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+// Aspect ratio (for older browsers)
+@mixin aspect-ratio($width: 1, $height: 1) {
+  position: relative;
+  
+  &::before {
+    content: '';
+    display: block;
+    padding-top: calc(#{$height} / #{$width} * 100%);
+  }
+  
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// =============================================================================
+// TYPOGRAPHY MIXINS
+// =============================================================================
+
+// Text truncation
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Multi-line text truncation
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Font smoothing
+@mixin font-smoothing {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Responsive font size
+@mixin responsive-font($min-size, $max-size, $min-vw: 320px, $max-vw: 1200px) {
+  font-size: $min-size;
+  
+  @media (min-width: $min-vw) {
+    font-size: calc(#{$min-size} + #{strip-unit($max-size - $min-size)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+  }
+  
+  @media (min-width: $max-vw) {
+    font-size: $max-size;
+  }
+}
+
+// =============================================================================
+// COMPONENT MIXINS
+// =============================================================================
+
+// Button reset
+@mixin button-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+// Input reset
+@mixin input-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+// Card/surface styling
+@mixin card($padding: var(--spacing-lg), $radius: var(--border-radius-lg)) {
+  background-color: var(--color-surface);
+  border: var(--border-width-1) solid var(--color-border);
+  border-radius: $radius;
+  padding: $padding;
+  box-shadow: var(--shadow-sm);
+}
+
+// =============================================================================
+// INTERACTION MIXINS
+// =============================================================================
+
+// Hover effects
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+// Touch-friendly targets
+@mixin touch-target($min-size: var(--touch-target-min)) {
+  min-width: $min-size;
+  min-height: $min-size;
+  
+  & {
+    touch-action: manipulation;
+  }
+}
+
+// Smooth transitions
+@mixin transition($properties: all, $duration: var(--transition-duration-200), $easing: var(--ease-in-out)) {
+  transition: $properties $duration $easing;
+  
+  @include reduced-motion {
+    transition-duration: 0.01ms;
+  }
+}
+
+// =============================================================================
+// RESPONSIVE MIXINS
+// =============================================================================
+
+// Breakpoint mixins
+@mixin mobile-only {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin tablet-only {
+  @media (min-width: 768px) and (max-width: 1023px) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin large-desktop-up {
+  @media (min-width: 1400px) {
+    @content;
+  }
+}
+
+// Custom breakpoint
+@mixin breakpoint($size) {
+  @media (min-width: $size) {
+    @content;
+  }
+}
+
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
+
+// Strip unit from number
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  
+  @return $number;
+}

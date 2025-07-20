@@ -1,0 +1,206 @@
+// ThemeToggle Component Styles
+
+.themeToggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggleButton {
+  transition: all 200ms ease-in-out;
+  
+  &[data-theme="dark"] {
+    .themeIcon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.themeIcon {
+  font-size: 1.125rem;
+  transition: transform 300ms ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.themeLabel {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.systemIndicator {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  background: var(--color-primary-500);
+  color: var(--color-surface);
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.systemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Theme Selector Styles
+.themeSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.selectorLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.themeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.themeOption {
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  
+  &[data-active="true"] {
+    background-color: var(--color-primary-500);
+    color: var(--color-surface);
+    
+    &:hover {
+      background-color: var(--color-primary-600);
+    }
+  }
+}
+
+.autoIndicator {
+  margin-left: auto;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+// Compact Toggle Styles
+.compactToggle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  transition: all 200ms ease-in-out;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+  
+  &[data-theme="dark"] {
+    .compactIcon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.compactIcon {
+  font-size: 1.25rem;
+  transition: transform 300ms ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .themeToggle {
+    .themeLabel {
+      display: none;
+    }
+  }
+  
+  .themeSelector {
+    width: 100%;
+  }
+  
+  .themeOptions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .themeOption {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// Animation for theme transitions
+@keyframes themeTransition {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.toggleButton,
+.compactToggle {
+  &:active {
+    animation: themeTransition 300ms ease-out;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .systemIndicator {
+    border-width: 3px;
+  }
+  
+  .themeSelector {
+    border-width: 2px;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .themeIcon,
+  .compactIcon {
+    transition: none;
+  }
+  
+  .toggleButton,
+  .compactToggle {
+    transition: none;
+    
+    &:hover {
+      transform: none;
+    }
+    
+    &:active {
+      animation: none;
+    }
+  }
+}

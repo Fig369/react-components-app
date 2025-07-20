@@ -1,0 +1,219 @@
+// =============================================================================
+// APP COMPONENT STYLES
+// =============================================================================
+
+// Import base styles first (includes variables and mixins)
+@use './styles/base.scss' as *;
+
+// Enable smooth scrolling globally
+html {
+  scroll-behavior: smooth;
+  
+  // Respect reduced motion preferences
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
+}
+
+.App {
+  text-align: center;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  @include transition((background-color, color));
+  
+  // Improve text accessibility for all themes
+  line-height: var(--line-height-relaxed);
+  font-size: var(--text-base);
+  @include font-smoothing;
+  
+  main {
+    flex: 1;
+    max-width: var(--container-full);
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 var(--spacing-md);
+  }
+  
+  // Floating Form Button Styles
+  .floating-form-button {
+    @include transition((transform, box-shadow));
+    
+    // Hide on small screens to avoid mobile nav conflicts
+    @media (max-width: 768px) {
+      display: none;
+    }
+    
+    // Hover effects handled via inline styles for dynamic behavior
+    &:hover {
+      background-color: var(--color-primary-600) !important;
+    }
+    
+    &:focus-visible {
+      outline: 2px solid var(--color-primary-300);
+      outline-offset: 2px;
+    }
+    
+    // High contrast mode support
+    @media (prefers-contrast: high) {
+      border: 2px solid var(--color-primary-contrast);
+    }
+  }
+}
+
+.app-header {
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  background-color: var(--color-surface);
+  border-bottom: var(--border-width-1) solid var(--color-border);
+  margin-bottom: var(--spacing-xl);
+  
+  // Ensure proper contrast for header text
+  h1 {
+    margin: 0;
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: var(--line-height-tight);
+    
+    // Ensure text is accessible in high contrast mode
+    @include high-contrast {
+      background: none;
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: unset;
+      background-clip: unset;
+      color: var(--color-text);
+    }
+  }
+}
+
+.app-tagline {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-sm) 0 var(--spacing-lg);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: balance;
+}
+
+.header-controls {
+  @include flex-center;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+// =============================================================================
+// DEMO SECTION STYLES
+// =============================================================================
+
+.demo-section {
+  margin-bottom: var(--spacing-2xl);
+  padding: 0 var(--spacing-xl);
+  
+  h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text);
+    text-align: left;
+    line-height: var(--line-height-snug);
+    
+    // Add semantic structure for screen readers
+    &:first-of-type {
+      border-top: var(--border-width-2) solid var(--color-primary-200);
+      padding-top: var(--spacing-md);
+    }
+  }
+}
+
+// =============================================================================
+// COMPONENT GROUPS
+// =============================================================================
+
+.button-group {
+  @include flex-center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
+  
+  // Improve touch targets for mobile
+  @include mobile-only {
+    gap: var(--spacing-sm);
+    
+    > * {
+      @include touch-target;
+    }
+  }
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN
+// =============================================================================
+
+@include mobile-only {
+  .app-header {
+    padding: var(--spacing-md);
+    @include flex-column;
+    gap: var(--spacing-md);
+    text-align: center;
+    
+    h1 {
+      font-size: var(--text-2xl);
+    }
+  }
+  
+  .demo-section {
+    padding: 0 var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    
+    h2 {
+      text-align: center;
+      font-size: var(--text-xl);
+    }
+  }
+  
+  .button-group {
+    @include flex-column;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+}
+
+@include large-desktop-up {
+  .App {
+    font-size: var(--text-lg);
+  }
+  
+  .app-header {
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    
+    h1 {
+      font-size: var(--text-4xl);
+    }
+  }
+  
+  .demo-section {
+    padding: 0 var(--spacing-2xl);
+    
+    h2 {
+      font-size: var(--text-3xl);
+    }
+  }
+}
+
+// Touch-friendly enhancements for tablets
+@include tablet-only {
+  @media (pointer: coarse) {
+    .button-group > * {
+      @include touch-target(var(--touch-target-comfortable));
+      padding: var(--spacing-md) var(--spacing-lg);
+    }
+  }
+}

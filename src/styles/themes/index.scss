@@ -1,0 +1,207 @@
+// =============================================================================
+// THEME SYSTEM ENTRY POINT
+// =============================================================================
+// Import order is important for cascade and specificity
+
+// 1. Import main design system variables first
+@use '../variables' as *;
+
+// 2. Import theme-specific variables and functions
+@use './_variables' as *;
+
+// 3. Import theme color definitions
+@use './_light' as *;
+@use './_dark' as *;
+
+// =============================================================================
+// GLOBAL THEME SETUP
+// =============================================================================
+
+// Base theme configuration
+html {
+  // Set color scheme for better browser integration
+  color-scheme: light dark;
+  
+  // Smooth transitions for theme changes
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+
+// Theme-specific color scheme overrides
+.theme-light,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+.theme-dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+// =============================================================================
+// UTILITY MIXINS FOR THEME SUPPORT
+// =============================================================================
+
+// Mixin for light theme specific styles
+@mixin light-theme {
+  :root &,
+  .theme-light &,
+  [data-theme="light"] & {
+    @content;
+  }
+}
+
+// Mixin for dark theme specific styles
+@mixin dark-theme {
+  .theme-dark &,
+  [data-theme="dark"] & {
+    @content;
+  }
+}
+
+// Mixin for theme-agnostic styles that adapt automatically
+@mixin theme-adaptive($light-value, $dark-value, $property: null) {
+  @if $property {
+    #{$property}: $light-value;
+    
+    .theme-dark &,
+    [data-theme="dark"] & {
+      #{$property}: $dark-value;
+    }
+  } @else {
+    @include light-theme {
+      @content($light-value);
+    }
+    
+    @include dark-theme {
+      @content($dark-value);
+    }
+  }
+}
+
+// =============================================================================
+// COMPONENT BASE STYLES
+// =============================================================================
+
+// Base body styles with theme support
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  line-height: map-get($line-heights, 'normal');
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+
+// Reset margins and ensure consistent box-sizing
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+// Improve text rendering
+body,
+input,
+textarea,
+button,
+select {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// =============================================================================
+// ACCESSIBILITY ENHANCEMENTS
+// =============================================================================
+
+// Improve focus visibility
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: var(--color-text);
+    --color-border-secondary: var(--color-text-secondary);
+  }
+  
+  button,
+  input,
+  select,
+  textarea {
+    border-width: 2px;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// =============================================================================
+// PRINT STYLES
+// =============================================================================
+
+@media print {
+  :root {
+    --color-background: white;
+    --color-text: black;
+    --color-border: black;
+  }
+  
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
+// =============================================================================
+// CUSTOM SCROLLBAR (WebKit browsers)
+// =============================================================================
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-tertiary);
+}
+
+// =============================================================================
+// SELECTION STYLES
+// =============================================================================
+
+::selection {
+  background-color: var(--color-primary-500);
+  color: var(--color-surface);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary-500);
+  color: var(--color-surface);
+}
