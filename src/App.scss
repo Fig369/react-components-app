@@ -4,6 +4,9 @@
 
 // Import base styles first (includes variables and mixins)
 @use './styles/base.scss' as *;
+@use './styles/performance-optimizations.scss' as *;
+@use './styles/mobile-optimizations.scss' as *;
+@use './styles/css-performance.scss' as *;
 
 // Enable smooth scrolling globally
 html {
@@ -25,9 +28,14 @@ html {
   @include transition((background-color, color));
   
   // Improve text accessibility for all themes
-  line-height: var(--line-height-relaxed);
-  font-size: var(--text-base);
-  @include font-smoothing;
+  & {
+    line-height: var(--line-height-relaxed);
+    font-size: var(--text-base);
+    @include font-smoothing;
+  }
+  
+  // Apply mobile optimizations
+  @extend .mobile-optimized;
   
   main {
     flex: 1;
@@ -213,7 +221,10 @@ html {
   @media (pointer: coarse) {
     .button-group > * {
       @include touch-target(var(--touch-target-comfortable));
-      padding: var(--spacing-md) var(--spacing-lg);
+      
+      & {
+        padding: var(--spacing-md) var(--spacing-lg);
+      }
     }
   }
 }

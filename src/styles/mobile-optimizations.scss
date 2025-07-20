@@ -1,0 +1,342 @@
+// =============================================================================
+// MOBILE-FIRST PERFORMANCE OPTIMIZATIONS
+// =============================================================================
+// Specific optimizations for mobile devices to improve Core Web Vitals
+
+// =============================================================================
+// CRITICAL MOBILE CSS (Above the fold only)
+// =============================================================================
+
+// Only include absolutely critical styles for mobile first paint
+%mobile-critical {
+  // Basic layout that prevents CLS
+  display: block;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+  // Optimize font rendering on mobile
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  
+  // Prevent horizontal scroll
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+// =============================================================================
+// MOBILE-SPECIFIC LAYOUT OPTIMIZATIONS
+// =============================================================================
+
+@media (max-width: 768px) {
+  // Reduce expensive operations on mobile
+  * {
+    // Disable transforms that cause repaints on mobile
+    transform: none !important;
+    
+    // Simplify transitions on mobile for better performance
+    transition-duration: 0.1s !important;
+    transition-timing-function: ease !important;
+    
+    // Disable complex animations on mobile
+    animation-duration: 0.1s !important;
+    animation-iteration-count: 1 !important;
+  }
+  
+  // Re-enable for users who explicitly want animations
+  @media (prefers-reduced-motion: no-preference) {
+    .allow-mobile-animations * {
+      transform: revert !important;
+      transition-duration: revert !important;
+      transition-timing-function: revert !important;
+      animation-duration: revert !important;
+      animation-iteration-count: revert !important;
+    }
+  }
+  
+  // Optimize grid layouts for mobile
+  .mobile-grid-optimize {
+    display: block !important;
+    
+    > * {
+      width: 100% !important;
+      margin-bottom: var(--spacing-md);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  // Simplify complex layouts on mobile
+  .complex-layout {
+    display: block !important;
+    
+    .summary-card,
+    .member-card {
+      margin-bottom: var(--spacing-sm);
+      padding: var(--spacing-sm);
+      
+      // Reduce box-shadows on mobile for better performance
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+  
+  // Optimize TeamSalesChart for mobile
+  .team-sales-chart {
+    &__summary-grid {
+      display: block !important;
+      
+      > * {
+        margin-bottom: var(--spacing-sm);
+      }
+    }
+    
+    &__member-grid {
+      display: block !important;
+      
+      > * {
+        margin-bottom: var(--spacing-xs);
+      }
+    }
+    
+    &__chart-container {
+      // Reduce expensive background gradients on mobile
+      background: var(--color-surface) !important;
+      
+      &::before {
+        display: none !important; // Remove shimmer on mobile
+      }
+    }
+  }
+  
+  // Optimize buttons for mobile
+  .button,
+  button,
+  [role="button"] {
+    // Ensure minimum touch target
+    min-height: 44px !important;
+    min-width: 44px !important;
+    
+    // Simplify hover effects on mobile
+    &:hover {
+      transform: none !important;
+      box-shadow: revert !important;
+    }
+  }
+  
+  // Optimize navigation for mobile
+  .nav {
+    // Remove expensive backdrop filters on mobile
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    
+    // Simplify mobile menu
+    &__mobileMenu {
+      // Use solid background instead of transparency for better performance
+      background: var(--color-surface) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+  }
+  
+  // Optimize text rendering on mobile
+  body {
+    // Use system fonts for better performance
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+    
+    // Optimize text rendering
+    text-rendering: optimizeSpeed !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: normal !important;
+  }
+  
+  // Reduce expensive CSS properties on mobile
+  .expensive-mobile {
+    // Remove gradient backgrounds
+    background-image: none !important;
+    background: var(--color-surface) !important;
+    
+    // Remove text gradients
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    background-clip: unset !important;
+    color: var(--color-text) !important;
+    
+    // Remove complex borders
+    border-image: none !important;
+    
+    // Simplify box-shadows
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+// =============================================================================
+// MOBILE INTERACTION OPTIMIZATIONS
+// =============================================================================
+
+@media (max-width: 768px) and (pointer: coarse) {
+  // Optimize for touch devices
+  * {
+    // Improve touch responsiveness
+    touch-action: manipulation;
+  }
+  
+  // Larger touch targets
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  // Remove hover effects on touch devices
+  .hover-only {
+    display: none !important;
+  }
+  
+  // Optimize scroll performance on mobile
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; // Disable smooth scroll on mobile for performance
+  }
+}
+
+// =============================================================================
+// MOBILE CRITICAL PATH CSS
+// =============================================================================
+
+// These styles should be inlined in the HTML head for mobile
+%mobile-critical-inline {
+  // Essential layout to prevent CLS
+  .App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--color-background);
+    color: var(--color-text);
+  }
+  
+  // Critical navigation styles
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  // Critical main content area
+  main {
+    flex: 1;
+    padding: var(--spacing-sm);
+  }
+  
+  // Critical button styles
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-primary-500);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--border-radius-md);
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+// =============================================================================
+// MOBILE LOADING STATES
+// =============================================================================
+
+@media (max-width: 768px) {
+  // Optimize loading states for mobile
+  .loading-skeleton {
+    // Use simple loading states instead of complex animations
+    background: var(--color-surface-secondary) !important;
+    animation: none !important;
+    
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+  
+  // Simplify chart loading on mobile
+  .chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+}
+
+// =============================================================================
+// MOBILE RESPONSIVE IMAGES
+// =============================================================================
+
+@media (max-width: 768px) {
+  img {
+    // Optimize image rendering on mobile
+    image-rendering: optimizeSpeed;
+    
+    // Prevent layout shift
+    height: auto;
+    max-width: 100%;
+    
+    // Load images more efficiently on mobile
+    loading: lazy;
+    decoding: async;
+  }
+  
+  // Optimize avatar images specifically
+  .avatar-image,
+  .member-avatar img {
+    // Use smaller sizes on mobile
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+// =============================================================================
+// UTILITY CLASSES FOR MOBILE OPTIMIZATION
+// =============================================================================
+
+// Apply mobile optimizations to specific components
+.mobile-optimized {
+  @media (max-width: 768px) {
+    // Apply mobile critical styles directly (can't extend across media queries)
+    display: block;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+    // Optimize font rendering on mobile
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+    
+    // Prevent horizontal scroll
+    max-width: 100%;
+    overflow-x: hidden;
+    
+    // Remove expensive effects
+    .expensive-mobile {
+      background-image: none !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+  }
+}

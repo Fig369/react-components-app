@@ -2,6 +2,13 @@
 
 A comprehensive React training application built with Create React App that demonstrates modern React concepts, accessibility best practices, and interactive components. This project serves as both a functional component library and an educational resource for learning React development.
 
+
+![Light Mode Desktop](light-mode-desktop.png)
+![Light Mode Mobile](light-mode-mobile.png)
+![Dark Mode Desktop](dark-mode-desktop.png)
+![Dark Mode Mobile](dark-mode-mobile.png)
+
+
 ## 🚀 Project Overview
 
 This training application showcases a complete modern React ecosystem including:

@@ -11,36 +11,22 @@ import {
   Legend,
   BarController,
   LineController,
-  PieController,
-  ArcElement,
-  DoughnutController,
-  RadarController,
-  RadialLinearScale,
-  PolarAreaController,
-  ScatterController,
 } from 'chart.js';
 import { useTheme } from '../../contexts/ThemeContext';
 import styles from './Chart.module.scss';
 
-// Register all Chart.js components
+// Register only used Chart.js components for smaller bundle
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
   LineElement,
   PointElement,
-  ArcElement,
   Title,
   Tooltip,
   Legend,
   BarController,
-  LineController,
-  PieController,
-  DoughnutController,
-  RadarController,
-  RadialLinearScale,
-  PolarAreaController,
-  ScatterController
+  LineController
 );
 
 /**
@@ -74,6 +60,11 @@ const Chart = forwardRef(({
   const chartId = useId();
   const { resolvedTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(loading);
+  const [responsiveState, setResponsiveState] = useState({
+    isMobile: false,
+    isSmallMobile: false,
+    devicePixelRatio: 1
+  });
   
   // Theme-aware color palette
   const getThemeColors = useMemo(() => {
@@ -146,16 +137,35 @@ const Chart = forwardRef(({
     return processedChartData;
   }, [data, getThemeColors, type]);
 
+  // Set responsive state after component mounts to avoid FOUC
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const updateResponsiveState = () => {
+        setResponsiveState({
+          isMobile: window.innerWidth <= 768,
+          isSmallMobile: window.innerWidth <= 480,
+          devicePixelRatio: window.devicePixelRatio || 1
+        });
+      };
+      
+      // Set initial state
+      updateResponsiveState();
+      
+      // Listen for resize events
+      window.addEventListener('resize', updateResponsiveState);
+      
+      return () => window.removeEventListener('resize', updateResponsiveState);
+    }
+  }, []);
+
   // Theme-aware default options with responsive enhancements
   const defaultOptions = useMemo(() => {
-    // Detect screen size for responsive adjustments
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    const isSmallMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
+    const { isMobile, isSmallMobile, devicePixelRatio } = responsiveState;
     
     return {
       responsive,
       maintainAspectRatio,
-      devicePixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
+      devicePixelRatio,
       plugins: {
         legend: {
           display: !isSmallMobile || type === 'pie' || type === 'doughnut',
@@ -190,7 +200,7 @@ const Chart = forwardRef(({
           position: isMobile ? 'nearest' : 'average',
         },
       },
-      scales: type === 'pie' || type === 'doughnut' || type === 'polarArea' || type === 'radar' ? {} : {
+      scales: {
         x: {
           grid: {
             color: getThemeColors.gridLines,
@@ -258,6 +268,7 @@ const Chart = forwardRef(({
     getThemeColors,
     type,
     onChartClick,
+    responsiveState,
   ]);
 
   // Merge provided options with defaults
@@ -347,75 +358,78 @@ const Chart = forwardRef(({
         return false;
       }
       
-      try {
-        const {
-          width = null,          // Custom export width (null = current size)
-          height = null,         // Custom export height (null = current size)
-          quality = 1,           // PNG quality (0.1 to 1.0)
-          pixelRatio = 2,        // Higher for retina displays
-          backgroundColor = getThemeColors.background // Background color
-        } = options;
+      const {
+        width = null,          // Custom export width (null = current size)
+        height = null,         // Custom export height (null = current size)
+        quality = 1,           // PNG quality (0.1 to 1.0)
+        pixelRatio = 2,        // Higher for retina displays
+        backgroundColor = getThemeColors.background // Background color
+      } = options;
 
-        const canvas = canvasRef.current;
-        
-        // Calculate optimal dimensions
-        const currentRect = canvas.getBoundingClientRect();
-        const exportWidth = width || Math.min(currentRect.width, 1920); // Max 1920px wide
-        const exportHeight = height || Math.min(currentRect.height, 1080); // Max 1080px tall
-        
-        // Create a high-resolution canvas for export
-        const exportCanvas = document.createElement('canvas');
-        const exportCtx = exportCanvas.getContext('2d');
-        
-        // Set high-resolution canvas dimensions
-        exportCanvas.width = exportWidth * pixelRatio;
-        exportCanvas.height = exportHeight * pixelRatio;
-        exportCanvas.style.width = `${exportWidth}px`;
-        exportCanvas.style.height = `${exportHeight}px`;
-        
-        // Scale context for high DPI
-        exportCtx.scale(pixelRatio, pixelRatio);
-        
-        // Set background color
-        exportCtx.fillStyle = backgroundColor;
-        exportCtx.fillRect(0, 0, exportWidth, exportHeight);
-        
-        // Draw the current chart onto the export canvas
-        exportCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
-        
-        // Get the data URL
-        const url = exportCanvas.toDataURL('image/png', quality);
-        
-        // Create and trigger download
-        const link = document.createElement('a');
-        link.download = filename || `chart-${exportWidth}x${exportHeight}-${new Date().toISOString().split('T')[0]}.png`;
-        link.href = url;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log(`Chart exported: ${exportWidth}x${exportHeight} at ${quality * 100}% quality`);
-        return true;
-        
-      } catch (error) {
-        console.error('Failed to export chart:', error);
-        
-        // Fallback: Use Chart.js built-in export
-        try {
-          const url = chartRef.current.toBase64Image('image/png', 1);
-          const link = document.createElement('a');
-          link.download = filename || `chart-${new Date().toISOString().split('T')[0]}.png`;
-          link.href = url;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          console.log('Chart exported using fallback method');
-          return true;
-        } catch (fallbackError) {
-          console.error('Fallback export also failed:', fallbackError);
-          return false;
-        }
-      }
+      const canvas = canvasRef.current;
+      
+      // Use requestAnimationFrame to ensure DOM is fully rendered before measuring
+      return new Promise((resolve) => {
+          requestAnimationFrame(() => {
+            try {
+              // Get dimensions without forcing layout when possible
+              const exportWidth = width || 1200; // Default standard width
+              const exportHeight = height || 800; // Default standard height
+          
+              // Create a high-resolution canvas for export
+              const exportCanvas = document.createElement('canvas');
+              const exportCtx = exportCanvas.getContext('2d');
+              
+              // Set high-resolution canvas dimensions
+              exportCanvas.width = exportWidth * pixelRatio;
+              exportCanvas.height = exportHeight * pixelRatio;
+              exportCanvas.style.width = `${exportWidth}px`;
+              exportCanvas.style.height = `${exportHeight}px`;
+              
+              // Scale context for high DPI
+              exportCtx.scale(pixelRatio, pixelRatio);
+              
+              // Set background color
+              exportCtx.fillStyle = backgroundColor;
+              exportCtx.fillRect(0, 0, exportWidth, exportHeight);
+              
+              // Draw the current chart onto the export canvas
+              exportCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
+              
+              // Get the data URL
+              const url = exportCanvas.toDataURL('image/png', quality);
+              
+              // Create and trigger download
+              const link = document.createElement('a');
+              link.download = filename || `chart-${exportWidth}x${exportHeight}-${new Date().toISOString().split('T')[0]}.png`;
+              link.href = url;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              
+              console.log(`Chart exported: ${exportWidth}x${exportHeight} at ${quality * 100}% quality`);
+              resolve(true);
+            } catch (error) {
+              console.error('Failed to export chart:', error);
+              
+              // Fallback: Use Chart.js built-in export
+              try {
+                const url = chartRef.current.toBase64Image('image/png', 1);
+                const link = document.createElement('a');
+                link.download = filename || `chart-${new Date().toISOString().split('T')[0]}.png`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                console.log('Chart exported using fallback method');
+                resolve(true);
+              } catch (fallbackError) {
+                console.error('Fallback export also failed:', fallbackError);
+                resolve(false);
+              }
+            }
+          });
+        });
     },
     
     // Get direct access to Chart.js instance
@@ -576,10 +590,5 @@ Chart.displayName = 'Chart';
 // Chart variants for common use cases
 export const BarChart = (props) => <Chart type="bar" {...props} />;
 export const LineChart = (props) => <Chart type="line" {...props} />;
-export const PieChart = (props) => <Chart type="pie" {...props} />;
-export const DoughnutChart = (props) => <Chart type="doughnut" {...props} />;
-export const RadarChart = (props) => <Chart type="radar" {...props} />;
-export const PolarAreaChart = (props) => <Chart type="polarArea" {...props} />;
-export const ScatterChart = (props) => <Chart type="scatter" {...props} />;
 
 export default Chart;

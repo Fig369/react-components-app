@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useThemeColors, useModalState } from '../../hooks';
-import Chart from '../Chart';
+import Chart from '../Chart/ChartLazy';
 import Button from '../Button';
 import Modal from '../Modal';
 import Card, { 
@@ -43,10 +43,14 @@ const TeamSalesChart = () => {
 
   // Preload Jay Figueroa's image for better performance
   useEffect(() => {
-    const jayImage = new Image();
-    jayImage.src = '/optimized/JayFig.webp';
-    jayImage.onload = () => console.log('Jay Figueroa image preloaded successfully');
-    jayImage.onerror = () => console.warn('Failed to preload Jay Figueroa image');
+    try {
+      const jayImage = new Image();
+      jayImage.src = '/optimized/JayFig.webp';
+      jayImage.onload = () => console.log('Jay Figueroa image preloaded successfully');
+      jayImage.onerror = () => console.warn('Failed to preload Jay Figueroa image, using fallback');
+    } catch (error) {
+      console.warn('Image preloading failed:', error);
+    }
   }, []);
   
   // Modal state management
@@ -288,7 +292,7 @@ const TeamSalesChart = () => {
           ticks: {
             maxRotation: 45,
             minRotation: 45,
-            callback: function(value, index) {
+            callback: (value, index) => {
               const member = sortedTeamMembers[index];
               return `${member.firstName} ${member.lastName}`;
             }
@@ -300,7 +304,7 @@ const TeamSalesChart = () => {
           borderWidth: 2,
           borderRadius: 4,
           hoverBorderWidth: 3,
-          hoverBackgroundColor: function(context) {
+          hoverBackgroundColor: (context) => {
             return context.parsed.backgroundColor;
           }
         }
@@ -336,20 +340,16 @@ const TeamSalesChart = () => {
       try {
         const filename = `team-sales-${selectedMetrics.join('-')}-${chartType}-${new Date().toISOString().split('T')[0]}.png`;
         
-        // Determine optimal export size based on screen size
-        const screenWidth = window.innerWidth;
-        const isMobile = screenWidth <= 768;
-        const isTablet = screenWidth <= 1024 && screenWidth > 768;
-        
+        // Use standard export size optimized for most devices
         const exportOptions = {
-          width: isMobile ? 800 : isTablet ? 1200 : 1600,  // Responsive export width
-          height: isMobile ? 600 : isTablet ? 800 : 1000,  // Responsive export height
-          quality: 0.95,                                   // High quality but compressed
-          pixelRatio: 2,                                   // Retina-ready
-          backgroundColor: '#ffffff'                       // Clean white background
+          width: 1200,      // Standard desktop width
+          height: 800,      // Standard desktop height  
+          quality: 0.95,    // High quality but compressed
+          pixelRatio: 2,    // Retina-ready
+          backgroundColor: '#ffffff' // Clean white background
         };
         
-        console.log(`Exporting chart at ${exportOptions.width}x${exportOptions.height} for ${isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'} optimization`);
+        console.log(`Exporting chart at ${exportOptions.width}x${exportOptions.height} with high quality optimization`);
         
         const success = chartRef.current.exportToPNG(filename, exportOptions);
         
@@ -730,7 +730,7 @@ const TeamSalesChart = () => {
                 variant="secondary"
                 size="small"
                 onClick={handleResetData}
-                leftIcon={<FiRefreshCw aria-hidden="true" />}
+                leftIcon={<FiRefreshCw />}
                 data-seo-element="reset-data-button"
                 aria-describedby="reset-desc"
               >
@@ -742,7 +742,7 @@ const TeamSalesChart = () => {
                 size="small"
                 onClick={handleGenerateRandomData}
                 disabled={isGenerating}
-                leftIcon={<FiRefreshCw aria-hidden="true" className={isGenerating ? styles['team-sales-chart__spinning-icon'] : ''} />}
+                leftIcon={<FiRefreshCw className={isGenerating ? styles['team-sales-chart__spinning-icon'] : ''} />}
                 data-seo-element="generate-data-button"
                 aria-describedby="generate-desc"
                 aria-busy={isGenerating}
@@ -757,7 +757,7 @@ const TeamSalesChart = () => {
                 variant="info"
                 size="small"
                 onClick={handleExportPNG}
-                leftIcon={<FiDownload aria-hidden="true" />}
+                leftIcon={<FiDownload />}
                 data-seo-element="export-chart-button"
                 aria-describedby="export-desc"
               >
@@ -768,7 +768,7 @@ const TeamSalesChart = () => {
                 variant="warning"
                 size="small"
                 onClick={handleExportPDF}
-                leftIcon={<FiFileText aria-hidden="true" />}
+                leftIcon={<FiFileText />}
                 data-seo-element="export-pdf-button"
                 aria-describedby="export-pdf-desc"
               >
@@ -785,7 +785,7 @@ const TeamSalesChart = () => {
                 variant={chartType === 'bar' ? 'primary' : 'outline'}
                 size="small"
                 onClick={() => setChartType('bar')}
-                leftIcon={<FiBarChart aria-hidden="true" />}
+                leftIcon={<FiBarChart />}
                 className={styles['team-sales-chart__control-button']}
                 aria-pressed={chartType === 'bar'}
                 data-seo-element="bar-chart-button"
@@ -796,7 +796,7 @@ const TeamSalesChart = () => {
                 variant={chartType === 'line' ? 'primary' : 'outline'}
                 size="small"
                 onClick={() => setChartType('line')}
-                leftIcon={<FiActivity aria-hidden="true" />}
+                leftIcon={<FiActivity />}
                 className={styles['team-sales-chart__control-button']}
                 aria-pressed={chartType === 'line'}
                 data-seo-element="line-chart-button"
@@ -816,7 +816,7 @@ const TeamSalesChart = () => {
                   variant={selectedMetrics.includes(key) ? 'primary' : 'outline'}
                   size="small"
                   onClick={() => handleMetricToggle(key)}
-                  leftIcon={<Icon aria-hidden="true" />}
+                  leftIcon={<Icon />}
                   className={styles['team-sales-chart__control-button']}
                   aria-pressed={selectedMetrics.includes(key)}
                   data-seo-element={`metric-${key}`}
@@ -839,9 +839,9 @@ const TeamSalesChart = () => {
                 size="small"
                 onClick={() => handleSort('name')}
                 onKeyDown={(e) => handleSortKeyDown(e, 'name')}
-                leftIcon={<FiUser aria-hidden="true" />}
+                leftIcon={<FiUser />}
                 rightIcon={sortConfig.key === 'name' ? 
-                  (sortConfig.direction === 'asc' ? <FiArrowUp aria-hidden="true" /> : <FiArrowDown aria-hidden="true" />) : 
+                  (sortConfig.direction === 'asc' ? <FiArrowUp /> : <FiArrowDown />) : 
                   null}
                 className={styles['team-sales-chart__control-button']}
                 aria-pressed={sortConfig.key === 'name'}
@@ -859,9 +859,9 @@ const TeamSalesChart = () => {
                 size="small"
                 onClick={() => handleSort('value')}
                 onKeyDown={(e) => handleSortKeyDown(e, 'value')}
-                leftIcon={<FiTrendingUp aria-hidden="true" />}
+                leftIcon={<FiTrendingUp />}
                 rightIcon={sortConfig.key !== 'name' ? 
-                  (sortConfig.direction === 'asc' ? <FiArrowUp aria-hidden="true" /> : <FiArrowDown aria-hidden="true" />) : 
+                  (sortConfig.direction === 'asc' ? <FiArrowUp /> : <FiArrowDown />) : 
                   null}
                 className={styles['team-sales-chart__control-button']}
                 aria-pressed={sortConfig.key !== 'name'}

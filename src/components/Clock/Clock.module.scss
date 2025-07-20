@@ -3,6 +3,7 @@
 // =============================================================================
 
 @use '../../styles/base.scss' as *;
+@use 'sass:map';
 
 // =============================================================================
 // VARIANT MAPS
@@ -178,8 +179,8 @@ $status-indicator-states: (
   
   @each $state, $props in $status-indicator-states {
     &--#{$state} {
-      background: map-get($props, background);
-      box-shadow: 0 0 8px rgba(map-get($props, shadow-color), 0.4);
+      background: map.get($props, background);
+      box-shadow: 0 0 8px rgba(map.get($props, shadow-color), 0.4);
     }
   }
 }
@@ -229,13 +230,13 @@ $status-indicator-states: (
   
   @each $variant, $props in $button-variants {
     &--#{$variant} {
-      background: map-get($props, background);
-      color: map-get($props, color);
-      border-color: map-get($props, border-color);
+      background: map.get($props, background);
+      color: map.get($props, color);
+      border-color: map.get($props, border-color);
       
       &:hover {
-        background: map-get($props, hover-background);
-        border-color: map-get($props, hover-border-color);
+        background: map.get($props, hover-background);
+        border-color: map.get($props, hover-border-color);
       }
     }
   }

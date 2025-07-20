@@ -419,8 +419,9 @@ export const Stopwatch = ({ className = '', ...props }) => {
           </h3>
           <div 
             className={styles.lapsList}
-            role="log"
+            role="list"
             aria-label="Lap times list"
+            aria-live="polite"
           >
             {laps.map((lapTime, index) => (
               <div 

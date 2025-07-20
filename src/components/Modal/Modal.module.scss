@@ -151,8 +151,10 @@ $modal-sizes: (
   }
   
   // Firefox scrollbar
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) var(--color-surface-secondary);
+  & {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) var(--color-surface-secondary);
+  }
   
   // Ensure content is accessible to screen readers
   &:focus-within {

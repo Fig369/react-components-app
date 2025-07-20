@@ -145,13 +145,14 @@ const Nav = ({
 
     if (hasChildren) {
       return (
-        <li key={item.id || index} className={styles.navItem}>
+        <li key={item.id || index} className={styles.navItem} role="none">
           <button
             className={styles.navLink}
             onClick={(e) => handleItemClick(item, e)}
             aria-expanded={isDropdownOpen}
-            aria-haspopup="true"
+            aria-haspopup="menu"
             aria-controls={`dropdown-${item.id}`}
+            role="menuitem"
             data-seo-element={`nav-dropdown-${item.id}`}
           >
             {item.label}
@@ -164,15 +165,17 @@ const Nav = ({
           <ul
             id={`dropdown-${item.id}`}
             className={styles.dropdown}
+            role="menu"
             aria-hidden={!isDropdownOpen}
             data-open={isDropdownOpen}
           >
             {item.children.map((child, childIndex) => (
-              <li key={child.id || childIndex}>
+              <li key={child.id || childIndex} role="none">
                 <a
                   href={child.href}
                   className={styles.dropdownLink}
                   onClick={(e) => handleItemClick(child, e)}
+                  role="menuitem"
                   tabIndex={isDropdownOpen ? 0 : -1}
                   data-seo-element={`nav-link-${child.id}`}
                 >
@@ -186,12 +189,13 @@ const Nav = ({
     }
 
     return (
-      <li key={item.id || index} className={styles.navItem}>
+      <li key={item.id || index} className={styles.navItem} role="none">
         <a
           ref={index === 0 ? firstMenuItemRef : index === items.length - 1 ? lastMenuItemRef : null}
           href={item.href}
           className={styles.navLink}
           onClick={(e) => handleItemClick(item, e)}
+          role="menuitem"
           aria-current={item.active ? 'page' : undefined}
           data-seo-element={`nav-link-${item.id}`}
         >
@@ -267,27 +271,32 @@ const Nav = ({
         )}
 
         {/* Mobile Navigation */}
-        <div
+        <nav
           ref={mobileMenuRef}
           id="mobile-menu"
           className={styles.mobileMenu}
+          role="navigation"
+          aria-label="Mobile navigation menu"
           aria-hidden={!isOpen}
           data-open={isOpen}
+          inert={!isOpen || undefined}
         >
-          <ul className={styles.mobileNavList} role="menu">
+          <ul className={styles.mobileNavList} role="menu" aria-label="Mobile menu">
             {items.map((item, index) => {
               const hasChildren = item.children && item.children.length > 0;
               const isDropdownOpen = activeDropdown === item.id;
 
               return (
-                <li key={item.id || index} className={styles.mobileNavItem}>
+                <li key={item.id || index} className={styles.mobileNavItem} role="none">
                   {hasChildren ? (
                     <>
                       <button
                         className={styles.mobileNavLink}
                         onClick={(e) => handleItemClick(item, e)}
                         aria-expanded={isDropdownOpen}
-                        aria-haspopup="true"
+                        aria-haspopup="menu"
+                        role="menuitem"
+                        tabIndex={isOpen ? 0 : -1}
                       >
                         {item.label}
                         <FiChevronDown 
@@ -298,16 +307,18 @@ const Nav = ({
                       </button>
                       <ul
                         className={styles.mobileDropdown}
+                        role="menu"
                         aria-hidden={!isDropdownOpen}
                         data-open={isDropdownOpen}
                       >
                         {item.children.map((child, childIndex) => (
-                          <li key={child.id || childIndex}>
+                          <li key={child.id || childIndex} role="none">
                             <a
                               href={child.href}
                               className={styles.mobileDropdownLink}
                               onClick={(e) => handleItemClick(child, e)}
-                              tabIndex={isDropdownOpen ? 0 : -1}
+                              role="menuitem"
+                              tabIndex={isOpen && isDropdownOpen ? 0 : -1}
                             >
                               {child.label}
                             </a>
@@ -320,7 +331,9 @@ const Nav = ({
                       href={item.href}
                       className={styles.mobileNavLink}
                       onClick={(e) => handleItemClick(item, e)}
+                      role="menuitem"
                       aria-current={item.active ? 'page' : undefined}
+                      tabIndex={isOpen ? 0 : -1}
                     >
                       {item.label}
                     </a>
@@ -329,7 +342,7 @@ const Nav = ({
               );
             })}
           </ul>
-        </div>
+        </nav>
       </nav>
     </>
   );

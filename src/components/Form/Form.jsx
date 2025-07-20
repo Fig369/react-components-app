@@ -161,8 +161,11 @@ export const FormTextarea = forwardRef(({
     if (autoResize && combinedRef.current) {
       const textarea = combinedRef.current;
       const adjustHeight = () => {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${textarea.scrollHeight}px`;
+        // Use requestAnimationFrame to batch DOM operations
+        requestAnimationFrame(() => {
+          textarea.style.height = 'auto';
+          textarea.style.height = `${textarea.scrollHeight}px`;
+        });
       };
       adjustHeight();
       textarea.addEventListener('input', adjustHeight);

@@ -38,13 +38,13 @@ export const useFormDemo = () => {
         const modal = document.querySelector('[data-modal-open="true"]');
         if (modal) {
           // Try to find the first text input, then any other focusable input
-          const firstInput = modal.querySelector(
-            'input[type="text"]:not([disabled]), ' +
-            'input[type="email"]:not([disabled]), ' +
-            'input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([disabled]), ' +
-            'textarea:not([disabled]), ' +
-            'select:not([disabled])'
-          );
+          const firstInput = modal.querySelector(`
+            input[type="text"]:not([disabled]),
+            input[type="email"]:not([disabled]),
+            input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([disabled]),
+            textarea:not([disabled]),
+            select:not([disabled])
+          `.replace(/\s+/g, ' ').trim());
           
           if (firstInput) {
             firstInput.focus();

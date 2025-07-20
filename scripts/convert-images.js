@@ -48,9 +48,17 @@ async function getImageFiles() {
   for (const dir of CONFIG.inputDirs) {
     try {
       const dirPath = path.resolve(dir);
-      await scanDirectory(dirPath, imageFiles);
+      // Check if directory exists before scanning
+      try {
+        await fs.access(dirPath);
+        await scanDirectory(dirPath, imageFiles);
+      } catch (accessError) {
+        // Directory doesn't exist, skip silently
+        continue;
+      }
     } catch (error) {
-      console.log(`Directory ${dir} not found, skipping...`);
+      // Skip directory if any other error occurs
+      continue;
     }
   }
   
@@ -98,7 +106,10 @@ async function scanDirectory(dirPath, imageFiles) {
       }
     }
   } catch (error) {
-    console.error(`Error scanning directory ${dirPath}:`, error.message);
+    // Skip directory silently if it doesn't exist or can't be accessed
+    if (error.code !== 'ENOENT') {
+      console.error(`Error scanning directory ${dirPath}:`, error.message);
+    }
   }
 }
 

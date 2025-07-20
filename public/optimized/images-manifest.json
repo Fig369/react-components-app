@@ -1,5 +1,5 @@
 {
-  "generated": "2025-07-20T05:17:29.346Z",
+  "generated": "2025-07-20T18:50:57.439Z",
   "images": {
     "logo192": {
       "original": "public/logo192.png",
@@ -29,14 +29,14 @@
     },
     "JayFig": {
       "original": "public/teamMembers/JayFig.png",
-      "originalSize": 0.08678531646728516,
+      "originalSize": 0.0046844482421875,
       "webp": {
         "path": "optimized/JayFig.webp",
-        "size": 0.007373809814453125
+        "size": 0.0008602142333984375
       },
       "optimized": {
         "path": "optimized/JayFig-optimized.png",
-        "size": 0.034603118896484375
+        "size": 0.0024271011352539062
       },
       "responsive": []
     }

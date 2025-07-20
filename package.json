@@ -17,12 +17,17 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "craco start",
     "prebuild": "node scripts/convert-images.js",
-    "build": "react-scripts build",
+    "build": "craco build",
+    "build:safe": "craco build",
+    "build:basic": "react-scripts build",
+    "postbuild:disabled": "node scripts/optimize-css.js",
     "build:prod": "npm run prebuild && npm run build",
+    "build:analyze": "ANALYZE_BUNDLE=true npm run build",
     "optimize-images": "node scripts/convert-images.js",
-    "test": "react-scripts test",
+    "optimize-css": "node scripts/optimize-css.js",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,6 +49,10 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "babel-plugin-transform-imports": "^2.0.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "css-minimizer-webpack-plugin": "^7.0.2",
     "sharp": "^0.34.3"
   }
 }

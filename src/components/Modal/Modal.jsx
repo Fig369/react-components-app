@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { FiX } from 'react-icons/fi';
 import styles from './Modal.module.scss';
 
@@ -96,7 +97,7 @@ const Modal = ({
     e.stopPropagation();
   };
 
-  return (
+  return createPortal(
     <div 
       ref={modalRef}
       className={`${styles.modal} ${styles[`modal--${size}`]}`}
@@ -144,7 +145,8 @@ const Modal = ({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

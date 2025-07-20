@@ -152,10 +152,13 @@
   font-weight: var(--font-weight-medium);
   border-radius: var(--border-radius-md);
   @include transition();
-  background: none;
-  border: none;
-  cursor: pointer;
-  height: 100%;
+  
+  & {
+    background: none;
+    border: none;
+    cursor: pointer;
+    height: 100%;
+  }
   
   &:hover {
     color: var(--color-text);

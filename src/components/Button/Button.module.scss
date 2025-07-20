@@ -2,6 +2,7 @@
 // This approach provides runtime theming, better performance, and cleaner code
 
 @use 'sass:map';
+@use '../../styles/performance-optimizations.scss' as *;
 
 .button {
   // CSS Custom Properties for theming
@@ -45,8 +46,8 @@
   background-color: var(--btn-bg);
   color: var(--btn-color);
   cursor: pointer;
-  transition: all var(--btn-transition-duration) var(--btn-transition-timing);
-  transition-property: background-color, border-color, color, box-shadow, transform;
+  @include optimized-transition(transform, var(--btn-transition-duration), var(--btn-transition-timing));
+  @include gpu-accelerate;
   
   // Modern touch-friendly tap target
   min-height: 44px;
@@ -150,7 +151,7 @@ $variants: (
     focus-ring-color: var(--color-border-tertiary)
   ),
   success: (
-    bg: var(--color-success-600),
+    bg: var(--color-success-800),
     bg-hover: var(--color-success-700),
     bg-active: var(--color-success-800),
     color: var(--color-surface),
@@ -166,17 +167,17 @@ $variants: (
     focus-ring-color: var(--color-danger-500)
   ),
   info: (
-    bg: var(--color-info-600),
-    bg-hover: var(--color-info-700),
-    bg-active: var(--color-info-800),
+    bg: var(--color-info-700),
+    bg-hover: var(--color-info-800),
+    bg-active: var(--color-info-900),
     color: var(--color-white),
     border-color: transparent,
     focus-ring-color: var(--color-info-500)
   ),
   warning: (
-    bg: var(--color-warning-600),
-    bg-hover: var(--color-warning-700),
-    bg-active: var(--color-warning-800),
+    bg: var(--color-warning-700),
+    bg-hover: var(--color-warning-800),
+    bg-active: var(--color-warning-900),
     color: var(--color-white),
     border-color: transparent,
     focus-ring-color: var(--color-warning-500)
@@ -349,10 +350,10 @@ $special-variants: (
 // Dark mode support with accessible colors
 @media (prefers-color-scheme: dark) {
   .button[data-variant="secondary"] {
-    --btn-bg: hsl(0, 0%, 20%);
-    --btn-bg-hover: hsl(0, 0%, 25%);
-    --btn-bg-active: hsl(0, 0%, 30%);
-    --btn-color: hsl(0, 0%, 90%);
+    --btn-bg: var(--color-surface-secondary-dark);
+    --btn-bg-hover: var(--color-surface-tertiary-dark);
+    --btn-bg-active: var(--color-surface-quaternary-dark);
+    --btn-color: var(--color-surface-primary-light);
   }
   
   .button[data-variant="outline"],
@@ -371,55 +372,56 @@ $special-variants: (
   }
   
   .button[data-variant="info"] {
-    --btn-bg: hsl(199, 89%, 48%); // More accessible blue (contrast ratio ~7:1)
-    --btn-bg-hover: hsl(199, 89%, 43%);
-    --btn-bg-active: hsl(199, 89%, 38%);
-    --btn-color: hsl(0, 0%, 100%); // White text maintains good contrast
-    --btn-focus-ring-color: hsl(199, 89%, 65%);
-  }
+    --btn-bg: var(--color-primary-600);
+    --btn-bg-hover: var(--color-primary-700);
+    --btn-bg-active: var(--color-primary-800);
+    --btn-color: var(--color-surface);
+    --btn-border-color: transparent;
+    --btn-focus-ring-color: var(--color-primary-500);
+    }
 }
 
 // Theme-based dark mode support (for explicit theme switching)
 [data-theme="dark"] .button[data-variant="warning"] {
-  --btn-bg: hsl(45, 93%, 47%); // More accessible yellow-orange
-  --btn-bg-hover: hsl(45, 93%, 42%);
-  --btn-bg-active: hsl(45, 93%, 37%);
-  --btn-color: hsl(0, 0%, 10%); // Dark text for better contrast
-  --btn-focus-ring-color: hsl(45, 93%, 60%);
+  --btn-bg: var(--color-warning-200); // More accessible yellow-orange
+  --btn-bg-hover: var(--color-warning-300);
+  --btn-bg-active: var(--color-warning-200);
+  --btn-color: var(--color-white); // White text for better contrast
+  --btn-focus-ring-color: var(--color-warning-600);
 }
 
 [data-theme="dark"] .button[data-variant="info"] {
-  --btn-bg: hsl(199, 89%, 48%); // More accessible blue
-  --btn-bg-hover: hsl(199, 89%, 43%);
-  --btn-bg-active: hsl(199, 89%, 38%);
-  --btn-color: hsl(0, 0%, 100%); // White text maintains good contrast
-  --btn-focus-ring-color: hsl(199, 89%, 65%);
+  --btn-bg:  var(--color-primary-400);
+  --btn-bg-hover: var(--color-primary-300);
+  --btn-bg-active: var(--color-primary-200);
+  --btn-color: var(--color-white); // White text maintains good contrast
+  --btn-focus-ring-color: var(--color-primary-600);
 }
 
 // High contrast mode overrides for even better accessibility
 @media (prefers-contrast: high) {
   .button[data-variant="warning"] {
-    --btn-bg: hsl(45, 100%, 40%);
-    --btn-color: hsl(0, 0%, 0%);
-    border-color: hsl(0, 0%, 0%);
+    --btn-bg: var(--color-warning-400);
+    --btn-color: var(--color-warning-50);
+    border-color: var(--color-warning-50);
   }
   
   .button[data-variant="info"] {
-    --btn-bg: hsl(199, 100%, 35%);
-    --btn-color: hsl(0, 0%, 100%);
-    border-color: hsl(0, 0%, 100%);
+    --btn-bg: var(--color-primary-400);
+    --btn-color: var(--color-primary-50);
+    border-color: var(--color-primary-50);
   }
   
   [data-theme="dark"] .button[data-variant="warning"] {
-    --btn-bg: hsl(45, 100%, 50%);
-    --btn-color: hsl(0, 0%, 0%);
-    border-color: hsl(0, 0%, 0%);
+    --btn-bg: var(--color-warning-400);
+    --btn-color: var(--color-warning-50);
+    border-color: var(--color-warning-50);
   }
   
   [data-theme="dark"] .button[data-variant="info"] {
-    --btn-bg: hsl(199, 100%, 50%);
-    --btn-color: hsl(0, 0%, 0%);
-    border-color: hsl(0, 0%, 0%);
+    --btn-bg: var(--color-primary-400);
+    --btn-color: var(--color-primary-50);
+    border-color: var(--color-primary-50);
   }
 }
 

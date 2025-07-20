@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import ChartComponent from '../ChartComponent';
 import Button from '../Button';
 import { ALL_MONTHS, getMonthsByRange } from '../../utils/dateUtils';
-import { userData } from '../utils/userData';
+import { userData } from '../../utils/userData';
 import './TeamAnalytics.scss';
 
 // Extract team members for easier access

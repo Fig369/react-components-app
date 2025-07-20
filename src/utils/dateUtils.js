@@ -75,22 +75,18 @@ export const getMonthsByRange = (range, fromDate = new Date()) => {
   switch (range) {
     case '3': {
       // Last 3 months
-      const months = [];
-      for (let i = 2; i >= 0; i--) {
-        const monthIndex = (currentMonth - i + 12) % 12;
-        months.push(monthsForYear[monthIndex]);
-      }
-      return months;
+      return Array.from({ length: 3 }, (_, i) => {
+        const monthIndex = (currentMonth - (2 - i) + 12) % 12;
+        return monthsForYear[monthIndex];
+      });
     }
     
     case '6': {
       // Last 6 months
-      const months = [];
-      for (let i = 5; i >= 0; i--) {
-        const monthIndex = (currentMonth - i + 12) % 12;
-        months.push(monthsForYear[monthIndex]);
-      }
-      return months;
+      return Array.from({ length: 6 }, (_, i) => {
+        const monthIndex = (currentMonth - (5 - i) + 12) % 12;
+        return monthsForYear[monthIndex];
+      });
     }
     
     case 'ytd': {

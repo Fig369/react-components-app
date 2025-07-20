@@ -1,10 +1,10 @@
+import { useEffect, lazy, Suspense } from 'react';
 import './App.scss';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
 import Button, { ButtonGroup } from './components/Button';
 import Clock from './components/Clock';
-import TeamSalesChart from './components/TeamSalesChart';
 import Section from './components/Section';
 import Modal from './components/Modal';
 import Form, { 
@@ -20,14 +20,13 @@ import Form, {
   FormActions 
 } from './components/Form';
 import { FiArrowRight, FiDownload, FiHeart, FiSettings, FiFileText } from 'react-icons/fi';
-
-// Configuration imports
 import { navigationConfig, companyConfig, sectionConfig, demoConfig } from './config';
-
-// Custom hooks
 import { useFormDemo } from './hooks/demo/useFormDemo';
 import { useButtonDemo } from './hooks/demo/useButtonDemo';
 import { useNavigation } from './hooks/demo/useNavigation';
+
+// Lazy load heavy components to improve initial load
+const TeamSalesChart = lazy(() => import('./components/TeamSalesChart'));
 
 function App() {
   // Custom hooks for demo functionality
@@ -50,6 +49,41 @@ function App() {
 
   const { handleNavClick, handleNewsletterSubmit } = useNavigation(openFormModal);
 
+  // Mark app as loaded and hide loading overlay
+  useEffect(() => {
+    try {
+      // Hide loading overlay when React has fully loaded
+      const overlay = document.getElementById('app-loading-overlay');
+      if (overlay) {
+        console.log('React app loaded, hiding loading overlay');
+        overlay.classList.add('hidden');
+        // Remove from DOM after transition
+        setTimeout(() => {
+          if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+            console.log('Loading overlay removed from DOM');
+          }
+        }, 300);
+      }
+      
+      // Ensure root is visible
+      const root = document.getElementById('root');
+      if (root) {
+        root.classList.add('app-loaded');
+        root.style.opacity = '1';
+        root.style.visibility = 'visible';
+        console.log('React app fully initialized and visible');
+      }
+    } catch (error) {
+      console.error('Error in loading overlay cleanup:', error);
+      // Force show content even if overlay cleanup fails
+      const root = document.getElementById('root');
+      if (root) {
+        root.style.opacity = '1';
+        root.style.visibility = 'visible';
+      }
+    }
+  }, []);
 
   return (
     <ThemeProvider>
@@ -367,7 +401,30 @@ function App() {
             variant={sectionConfig.sections[7].variant}
             spacing={sectionConfig.sections[7].spacing}
           >
-            <TeamSalesChart />
+            <Suspense 
+              fallback={
+                <div 
+                  className="chart-loading layout-contained paint-optimized"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '400px',
+                    background: 'var(--color-surface)',
+                    borderRadius: 'var(--border-radius-lg)',
+                    color: 'var(--color-text-secondary)',
+                    fontSize: 'var(--text-sm)',
+                    border: '1px solid var(--color-border)'
+                  }}
+                  role="status"
+                  aria-label="Loading sales chart"
+                >
+                  Loading sales chart...
+                </div>
+              }
+            >
+              <TeamSalesChart />
+            </Suspense>
           </Section>
         </main>
 

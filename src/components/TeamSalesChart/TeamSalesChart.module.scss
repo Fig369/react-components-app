@@ -4,6 +4,8 @@
 
 @use '../../styles/base.scss' as *;
 @use '../../styles/mixins.scss' as *;
+@use '../../styles/performance-optimizations.scss' as *;
+@use '../../styles/css-performance.scss' as *;
 @use 'sass:map';
 
 // =============================================================================
@@ -49,6 +51,11 @@ $grid-columns: (
   max-width: var(--container-full);
   margin: 0 auto;
   padding: var(--spacing-lg);
+  
+  // Apply performance optimizations
+  @extend .layout-contained;
+  @extend .mobile-simplified;
+  @extend .critical-performance;
   
   @include mobile-only {
     padding: var(--spacing-md);
@@ -178,8 +185,9 @@ $grid-columns: (
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-600), var(--color-primary-500));
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
+    transform: translateX(-100%);
+    animation: shimmer-optimized 3s ease-in-out infinite;
+    will-change: transform;
   }
   
   @include mobile-only {
@@ -225,9 +233,9 @@ $grid-columns: (
 
 .team-sales-chart__legend-items {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-md);
-  justify-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
+  // justify-items: center;
   
   @include mobile-only {
     grid-template-columns: 1fr;
@@ -242,11 +250,11 @@ $grid-columns: (
 .team-sales-chart__legend-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   font-size: var(--text-sm);
   color: var(--color-text);
   font-weight: var(--font-weight-medium);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
   background: var(--color-surface);
   border-radius: var(--border-radius-lg);
   @include transition();
@@ -347,7 +355,12 @@ $grid-columns: (
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
-  @include transition();
+  @include optimized-transition(transform, 0.2s, ease-out);
+  @include gpu-accelerate;
+  
+  // Apply performance optimizations
+  @extend .paint-optimized;
+  @extend .gpu-optimized;
   
   &::before {
     content: '';
@@ -482,7 +495,13 @@ $grid-columns: (
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
-  @include transition();
+  @include optimized-transition(transform, 0.2s, ease-out);
+  @include gpu-accelerate;
+  
+  // Apply performance optimizations
+  @extend .paint-optimized;
+  @extend .gpu-optimized;
+  @extend .flex-optimized;
   
   &::before {
     content: '';
@@ -633,7 +652,8 @@ $grid-columns: (
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
   border: var(--border-width-1) solid transparent;
-  @include transition();
+  @include optimized-transition(transform, 0.15s, ease-out);
+  @include gpu-accelerate;
 }
 
 @each $level, $colors in $performance-levels {

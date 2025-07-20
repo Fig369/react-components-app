@@ -1,0 +1,242 @@
+// =============================================================================
+// CSS PERFORMANCE OPTIMIZATIONS
+// =============================================================================
+// Specific optimizations to reduce Style & Layout computation time
+
+// =============================================================================
+// SELECTOR PERFORMANCE OPTIMIZATIONS
+// =============================================================================
+
+// Replace expensive universal selectors with targeted classes
+.performance-optimized {
+  // Use class-based selectors instead of complex attribute/pseudo selectors
+  &.nav-item {
+    // Replace [data-*] selectors with classes where possible
+    display: flex;
+    align-items: center;
+  }
+  
+  &.button-hover {
+    // Pre-calculate hover states to avoid runtime style computation
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+  
+  &.card-interactive {
+    // Use will-change sparingly and remove when not needed
+    will-change: transform;
+    
+    &:hover {
+      will-change: auto; // Reset after interaction
+    }
+  }
+}
+
+// =============================================================================
+// LAYOUT OPTIMIZATION
+// =============================================================================
+
+// Use contain property to isolate expensive layout calculations
+.layout-contained {
+  contain: layout style paint;
+  
+  // For components that don't affect outside elements
+  &.isolated-component {
+    contain: strict;
+  }
+  
+  // For text-heavy components
+  &.text-content {
+    contain: layout style;
+  }
+}
+
+// Optimize flexbox performance
+.flex-optimized {
+  // Use specific flex values instead of auto calculations
+  flex: 0 0 auto; // Instead of flex: auto
+  
+  &.flex-grow {
+    flex: 1 0 0%; // More explicit than flex: 1
+  }
+  
+  &.flex-shrink {
+    flex: 0 1 auto;
+  }
+}
+
+// =============================================================================
+// PAINT OPTIMIZATION
+// =============================================================================
+
+// Reduce paint complexity
+.paint-optimized {
+  // Use simpler properties that don't trigger expensive repaints
+  &.simple-shadow {
+    // Replace complex box-shadows with simpler alternatives
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    
+    // Avoid multiple shadows
+    &:not(.complex-shadow) {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  &.simple-gradient {
+    // Replace complex gradients with simpler alternatives on mobile
+    @media (max-width: 768px) {
+      background: var(--color-surface);
+      
+      &::before {
+        display: none; // Remove pseudo-element gradients
+      }
+    }
+  }
+  
+  &.optimized-border {
+    // Use border instead of box-shadow for simple borders
+    border: 1px solid var(--color-border);
+    
+    &:not(.shadow-border) {
+      box-shadow: none;
+    }
+  }
+}
+
+// =============================================================================
+// COMPOSITION OPTIMIZATION
+// =============================================================================
+
+// Force GPU acceleration only when beneficial
+.gpu-optimized {
+  // Use transform instead of changing layout properties
+  &.translate-instead-of-position {
+    transform: translateX(var(--offset, 0));
+    // Instead of: left: var(--offset, 0);
+  }
+  
+  &.scale-instead-of-dimensions {
+    transform: scale(var(--scale, 1));
+    // Instead of: width: calc(100% * var(--scale, 1));
+  }
+  
+  &.opacity-instead-of-visibility {
+    opacity: var(--opacity, 1);
+    // Faster than: visibility: var(--visibility, visible);
+  }
+}
+
+// =============================================================================
+// MOBILE-SPECIFIC OPTIMIZATIONS
+// =============================================================================
+
+@media (max-width: 768px) {
+  // Remove expensive CSS features on mobile
+  .mobile-simplified {
+    // Remove text-shadow on mobile
+    text-shadow: none !important;
+    
+    // Remove border-radius on mobile for better performance
+    border-radius: 0 !important;
+    
+    // Remove backdrop-filter on mobile
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    
+    // Simplify gradients
+    background-image: none !important;
+    
+    // Remove multiple box-shadows
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    
+    // Disable expensive pseudo-elements
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+  
+  // Optimize animations for mobile
+  .mobile-animation-optimized {
+    // Use simpler easing functions
+    transition-timing-function: ease !important;
+    
+    // Shorter durations
+    transition-duration: 0.15s !important;
+    
+    // Only animate transform and opacity
+    transition-property: transform, opacity !important;
+  }
+  
+  // Optimize text rendering on mobile
+  .mobile-text-optimized {
+    // Use system fonts for better performance
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+    
+    // Optimize text rendering
+    text-rendering: optimizeSpeed !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: normal !important;
+    
+    // Remove text effects
+    text-stroke: none !important;
+    -webkit-text-stroke: none !important;
+  }
+}
+
+// =============================================================================
+// CRITICAL PERFORMANCE RULES
+// =============================================================================
+
+// High-priority optimizations for main-thread performance
+.critical-performance {
+  // Prevent layout thrashing
+  &.layout-stable {
+    // Use aspect-ratio instead of padding-bottom hacks
+    aspect-ratio: var(--aspect-ratio, auto);
+    
+    // Use explicit dimensions when possible
+    width: var(--width, auto);
+    height: var(--height, auto);
+  }
+  
+  &.paint-stable {
+    // Prevent paint invalidation
+    will-change: transform; // Only for elements that will definitely change
+    
+    // Use paint containment for independent components
+    contain: paint;
+  }
+  
+  &.style-stable {
+    // Prevent style recalculation
+    contain: style;
+    
+    // Use CSS custom properties efficiently
+    --dynamic-value: var(--base-value, initial);
+  }
+}
+
+// =============================================================================
+// PERFORMANCE DEBUGGING UTILITIES
+// =============================================================================
+
+@media (max-width: 768px) {
+  // Highlight expensive elements in development
+  .perf-debug {
+    &.expensive-selector {
+      /* Debug: Complex selector detected */
+      outline: 2px solid red;
+    }
+    
+    &.expensive-property {
+      /* Debug: Expensive CSS property detected */
+      outline: 2px solid orange;
+    }
+    
+    &.layout-trigger {
+      /* Debug: Layout-triggering property detected */
+      outline: 2px solid yellow;
+    }
+  }
+}
