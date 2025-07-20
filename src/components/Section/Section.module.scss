@@ -169,7 +169,7 @@
   }
   
   @include mobile-only {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-sm);
   }
   
   @include reduced-motion {

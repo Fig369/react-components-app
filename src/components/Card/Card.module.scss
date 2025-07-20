@@ -211,6 +211,11 @@ $elevation-variants: (
   @extend .card__avatar;
 }
 
+// Legacy grid class
+.card-grid {
+  @extend .card__grid;
+}
+
 .card {
   &__image {
     position: relative;
@@ -394,7 +399,7 @@ $elevation-variants: (
 
 // Responsive adjustments
 @media (max-width: 768px) {
-  .card-grid {
+  .card__grid {
     &--cols-3,
     &--cols-4,
     &[data-cols="3"],
@@ -405,7 +410,7 @@ $elevation-variants: (
 }
 
 @media (max-width: 480px) {
-  .card-grid {
+  .card__grid {
     &--cols-2,
     &--cols-3,
     &--cols-4,

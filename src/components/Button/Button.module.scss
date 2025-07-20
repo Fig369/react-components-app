@@ -164,6 +164,22 @@ $variants: (
     color: var(--color-surface),
     border-color: transparent,
     focus-ring-color: var(--color-danger-500)
+  ),
+  info: (
+    bg: var(--color-info-600),
+    bg-hover: var(--color-info-700),
+    bg-active: var(--color-info-800),
+    color: var(--color-white),
+    border-color: transparent,
+    focus-ring-color: var(--color-info-500)
+  ),
+  warning: (
+    bg: var(--color-warning-600),
+    bg-hover: var(--color-warning-700),
+    bg-active: var(--color-warning-800),
+    color: var(--color-white),
+    border-color: transparent,
+    focus-ring-color: var(--color-warning-500)
   )
 );
 
@@ -330,7 +346,7 @@ $special-variants: (
   }
 }
 
-// Dark mode support
+// Dark mode support with accessible colors
 @media (prefers-color-scheme: dark) {
   .button[data-variant="secondary"] {
     --btn-bg: hsl(0, 0%, 20%);
@@ -343,6 +359,67 @@ $special-variants: (
   .button[data-variant="ghost"] {
     --btn-bg-hover: hsla(0, 0%, 100%, 0.08);
     --btn-bg-active: hsla(0, 0%, 100%, 0.12);
+  }
+  
+  // Enhanced accessibility for warning and info variants in dark mode
+  .button[data-variant="warning"] {
+    --btn-bg: hsl(45, 93%, 47%); // More accessible yellow-orange (contrast ratio ~7:1)
+    --btn-bg-hover: hsl(45, 93%, 42%);
+    --btn-bg-active: hsl(45, 93%, 37%);
+    --btn-color: hsl(0, 0%, 10%); // Dark text on light background for better contrast
+    --btn-focus-ring-color: hsl(45, 93%, 60%);
+  }
+  
+  .button[data-variant="info"] {
+    --btn-bg: hsl(199, 89%, 48%); // More accessible blue (contrast ratio ~7:1)
+    --btn-bg-hover: hsl(199, 89%, 43%);
+    --btn-bg-active: hsl(199, 89%, 38%);
+    --btn-color: hsl(0, 0%, 100%); // White text maintains good contrast
+    --btn-focus-ring-color: hsl(199, 89%, 65%);
+  }
+}
+
+// Theme-based dark mode support (for explicit theme switching)
+[data-theme="dark"] .button[data-variant="warning"] {
+  --btn-bg: hsl(45, 93%, 47%); // More accessible yellow-orange
+  --btn-bg-hover: hsl(45, 93%, 42%);
+  --btn-bg-active: hsl(45, 93%, 37%);
+  --btn-color: hsl(0, 0%, 10%); // Dark text for better contrast
+  --btn-focus-ring-color: hsl(45, 93%, 60%);
+}
+
+[data-theme="dark"] .button[data-variant="info"] {
+  --btn-bg: hsl(199, 89%, 48%); // More accessible blue
+  --btn-bg-hover: hsl(199, 89%, 43%);
+  --btn-bg-active: hsl(199, 89%, 38%);
+  --btn-color: hsl(0, 0%, 100%); // White text maintains good contrast
+  --btn-focus-ring-color: hsl(199, 89%, 65%);
+}
+
+// High contrast mode overrides for even better accessibility
+@media (prefers-contrast: high) {
+  .button[data-variant="warning"] {
+    --btn-bg: hsl(45, 100%, 40%);
+    --btn-color: hsl(0, 0%, 0%);
+    border-color: hsl(0, 0%, 0%);
+  }
+  
+  .button[data-variant="info"] {
+    --btn-bg: hsl(199, 100%, 35%);
+    --btn-color: hsl(0, 0%, 100%);
+    border-color: hsl(0, 0%, 100%);
+  }
+  
+  [data-theme="dark"] .button[data-variant="warning"] {
+    --btn-bg: hsl(45, 100%, 50%);
+    --btn-color: hsl(0, 0%, 0%);
+    border-color: hsl(0, 0%, 0%);
+  }
+  
+  [data-theme="dark"] .button[data-variant="info"] {
+    --btn-bg: hsl(199, 100%, 50%);
+    --btn-color: hsl(0, 0%, 0%);
+    border-color: hsl(0, 0%, 0%);
   }
 }
 

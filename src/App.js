@@ -19,7 +19,7 @@ import Form, {
   FormSwitch, 
   FormActions 
 } from './components/Form';
-import { FiArrowRight, FiDownload, FiHeart, FiSettings, FiEdit3, FiFileText } from 'react-icons/fi';
+import { FiArrowRight, FiDownload, FiHeart, FiSettings, FiFileText } from 'react-icons/fi';
 
 // Configuration imports
 import { navigationConfig, companyConfig, sectionConfig, demoConfig } from './config';
@@ -370,46 +370,6 @@ function App() {
             <TeamSalesChart />
           </Section>
         </main>
-
-        {/* Floating Action Button for Form Demo */}
-        <Button
-          variant="primary"
-          size="large"
-          onClick={openFormModal}
-          leftIcon={<FiEdit3 aria-hidden="true" />}
-          className="floating-form-button"
-          aria-label="Open form components demo"
-          data-seo-element="floating-form-demo"
-          style={{
-            position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-            borderRadius: '50px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
-            zIndex: 1000,
-            minWidth: 'auto',
-            padding: '1rem 1.5rem',
-            background: 'var(--color-primary-500)',
-            border: 'none',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.2)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
-          }}
-        >
-          <span style={{ 
-            marginLeft: '0.5rem',
-            fontSize: '0.9rem',
-            fontWeight: '600'
-          }}>
-            Forms
-          </span>
-        </Button>
 
         {/* Form Demo Modal */}
         <Modal

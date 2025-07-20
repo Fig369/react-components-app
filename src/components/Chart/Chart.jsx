@@ -344,7 +344,7 @@ const Chart = forwardRef(({
     exportToPNG: (filename, options = {}) => {
       if (!chartRef.current) {
         console.warn('Chart instance not available for export');
-        return null;
+        return false;
       }
       
       try {
@@ -357,19 +357,17 @@ const Chart = forwardRef(({
         } = options;
 
         const canvas = canvasRef.current;
-        const chart = chartRef.current;
         
-        // Create optimized export canvas
+        // Calculate optimal dimensions
+        const currentRect = canvas.getBoundingClientRect();
+        const exportWidth = width || Math.min(currentRect.width, 1920); // Max 1920px wide
+        const exportHeight = height || Math.min(currentRect.height, 1080); // Max 1080px tall
+        
+        // Create a high-resolution canvas for export
         const exportCanvas = document.createElement('canvas');
         const exportCtx = exportCanvas.getContext('2d');
         
-        // Calculate optimal dimensions
-        const currentWidth = canvas.width / (window.devicePixelRatio || 1);
-        const currentHeight = canvas.height / (window.devicePixelRatio || 1);
-        const exportWidth = width || Math.min(currentWidth, 1920); // Max 1920px wide
-        const exportHeight = height || Math.min(currentHeight, 1080); // Max 1080px tall
-        
-        // Set high-resolution canvas
+        // Set high-resolution canvas dimensions
         exportCanvas.width = exportWidth * pixelRatio;
         exportCanvas.height = exportHeight * pixelRatio;
         exportCanvas.style.width = `${exportWidth}px`;
@@ -382,67 +380,41 @@ const Chart = forwardRef(({
         exportCtx.fillStyle = backgroundColor;
         exportCtx.fillRect(0, 0, exportWidth, exportHeight);
         
-        // Temporarily resize chart for export
-        const originalOptions = { ...chart.options };
-        chart.options.responsive = false;
-        chart.options.maintainAspectRatio = false;
-        chart.options.devicePixelRatio = pixelRatio;
+        // Draw the current chart onto the export canvas
+        exportCtx.drawImage(canvas, 0, 0, exportWidth, exportHeight);
         
-        // Create temporary chart for export
-        const tempChart = new ChartJS(exportCanvas, {
-          type: chart.config.type,
-          data: chart.data,
-          options: {
-            ...chart.options,
-            animation: false, // Disable animations for export
-            plugins: {
-              ...chart.options.plugins,
-              legend: {
-                ...chart.options.plugins?.legend,
-                labels: {
-                  ...chart.options.plugins?.legend?.labels,
-                  font: {
-                    ...chart.options.plugins?.legend?.labels?.font,
-                    size: Math.max(12, (chart.options.plugins?.legend?.labels?.font?.size || 12) * pixelRatio * 0.5)
-                  }
-                }
-              }
-            }
-          }
-        });
+        // Get the data URL
+        const url = exportCanvas.toDataURL('image/png', quality);
         
-        // Wait for chart to render then export
-        setTimeout(() => {
-          try {
-            const url = exportCanvas.toDataURL('image/png', quality);
-            
-            // Restore original chart options
-            chart.options = originalOptions;
-            chart.update('none');
-            
-            // Clean up temporary chart
-            tempChart.destroy();
-            
-            // Create and trigger download
-            const link = document.createElement('a');
-            link.download = filename || `chart-${exportWidth}x${exportHeight}-${new Date().toISOString().split('T')[0]}.png`;
-            link.href = url;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            console.log(`Chart exported: ${exportWidth}x${exportHeight} at ${quality * 100}% quality`);
-            return url;
-          } catch (exportError) {
-            console.error('Failed to export optimized chart:', exportError);
-            // Fallback to simple export
-            return chart.toBase64Image('image/png', quality);
-          }
-        }, 100);
+        // Create and trigger download
+        const link = document.createElement('a');
+        link.download = filename || `chart-${exportWidth}x${exportHeight}-${new Date().toISOString().split('T')[0]}.png`;
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log(`Chart exported: ${exportWidth}x${exportHeight} at ${quality * 100}% quality`);
+        return true;
         
       } catch (error) {
         console.error('Failed to export chart:', error);
-        return null;
+        
+        // Fallback: Use Chart.js built-in export
+        try {
+          const url = chartRef.current.toBase64Image('image/png', 1);
+          const link = document.createElement('a');
+          link.download = filename || `chart-${new Date().toISOString().split('T')[0]}.png`;
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          console.log('Chart exported using fallback method');
+          return true;
+        } catch (fallbackError) {
+          console.error('Fallback export also failed:', fallbackError);
+          return false;
+        }
       }
     },
     
@@ -475,7 +447,7 @@ const Chart = forwardRef(({
         return false;
       }
     }
-  }), []);
+  }), [getThemeColors.background]);
 
   // Handle loading state
   if (isLoading || loading) {

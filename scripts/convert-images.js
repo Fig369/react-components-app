@@ -68,12 +68,18 @@ async function scanDirectory(dirPath, imageFiles) {
       const fullPath = path.join(dirPath, item.name);
       
       if (item.isDirectory()) {
-        // Skip node_modules and build directories
-        if (!['node_modules', 'build', 'dist', '.git'].includes(item.name)) {
+        // Skip node_modules, build directories, and optimized output directory
+        if (!['node_modules', 'build', 'dist', '.git', 'optimized'].includes(item.name)) {
           await scanDirectory(fullPath, imageFiles);
         }
       } else if (item.isFile()) {
         const ext = path.extname(item.name).toLowerCase();
+        
+        // Skip already optimized files to prevent infinite loops
+        if (item.name.includes('-optimized') || item.name.includes('-w.')) {
+          continue;
+        }
+        
         if (CONFIG.extensions.includes(ext)) {
           const stats = await fs.stat(fullPath);
           const sizeMB = stats.size / (1024 * 1024);

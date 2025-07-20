@@ -1,41 +1,41 @@
 {
-  "generated": "2025-07-20T03:39:35.828Z",
+  "generated": "2025-07-20T05:17:29.346Z",
   "images": {
     "logo192": {
-      "original": "public\\logo192.png",
+      "original": "public/logo192.png",
       "originalSize": 0.005099296569824219,
       "webp": {
-        "path": "optimized\\logo192.webp",
+        "path": "optimized/logo192.webp",
         "size": 0.0074710845947265625
       },
       "optimized": {
-        "path": "optimized\\logo192-optimized.png",
+        "path": "optimized/logo192-optimized.png",
         "size": 0.006451606750488281
       },
       "responsive": []
     },
     "logo512": {
-      "original": "public\\logo512.png",
+      "original": "public/logo512.png",
       "originalSize": 0.00921630859375,
       "webp": {
-        "path": "optimized\\logo512.webp",
+        "path": "optimized/logo512.webp",
         "size": 0.016971588134765625
       },
       "optimized": {
-        "path": "optimized\\logo512-optimized.png",
+        "path": "optimized/logo512-optimized.png",
         "size": 0.011354446411132812
       },
       "responsive": []
     },
     "JayFig": {
-      "original": "src\\assets\\JayFig.png",
+      "original": "public/teamMembers/JayFig.png",
       "originalSize": 0.08678531646728516,
       "webp": {
-        "path": "optimized\\JayFig.webp",
+        "path": "optimized/JayFig.webp",
         "size": 0.007373809814453125
       },
       "optimized": {
-        "path": "optimized\\JayFig-optimized.png",
+        "path": "optimized/JayFig-optimized.png",
         "size": 0.034603118896484375
       },
       "responsive": []

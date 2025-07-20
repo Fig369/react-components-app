@@ -1,11 +1,44 @@
 // =============================================================================
-// REUSABLE MODAL COMPONENT STYLES
+// REUSABLE MODAL COMPONENT STYLES - BEM COMPLIANT
 // =============================================================================
 
 @use '../../styles/base.scss' as *;
+@use 'sass:map';
 
 // =============================================================================
-// MODAL CONTAINER
+// MODAL CONFIGURATION
+// =============================================================================
+
+// Modal size variants map
+$modal-sizes: (
+  small: (
+    max-width: 400px,
+    mobile-max-width: 90vw
+  ),
+  medium: (
+    max-width: 600px,
+    mobile-max-width: 95vw
+  ),
+  large: (
+    max-width: 800px,
+    mobile-max-width: 95vw,
+    tablet-max-width: 90vw
+  ),
+  fullscreen: (
+    max-width: 95vw,
+    max-height: 95vh,
+    width: 95vw,
+    height: 95vh,
+    mobile-max-width: 100vw,
+    mobile-max-height: 100vh,
+    mobile-width: 100vw,
+    mobile-height: 100vh,
+    mobile-border-radius: 0
+  )
+);
+
+// =============================================================================
+// MODAL BLOCK
 // =============================================================================
 
 .modal {
@@ -27,9 +60,9 @@
   }
   
   // Animation for modal appearance
-  animation: modalFadeIn 0.2s ease-out;
+  animation: modal-fade-in 0.2s ease-out;
   
-  @keyframes modalFadeIn {
+  @keyframes modal-fade-in {
     from {
       opacity: 0;
     }
@@ -40,10 +73,11 @@
 }
 
 // =============================================================================
-// MODAL OVERLAY
+// MODAL ELEMENTS
 // =============================================================================
 
-.modalOverlay {
+// Modal overlay element
+.modal__overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -57,16 +91,10 @@
   [data-theme="dark"] & {
     background: rgba(0, 0, 0, 0.7);
   }
-  
-  // Remove overlay hover effect to prevent interference with modal content
-  // The overlay is still clickable but doesn't change appearance on hover
 }
 
-// =============================================================================
-// MODAL CONTENT
-// =============================================================================
-
-.modalContent {
+// Modal content container
+.modal__content {
   position: relative;
   width: 100%;
   max-height: calc(100vh - 2rem);
@@ -80,9 +108,9 @@
   box-sizing: border-box;
   
   // Animation for content appearance
-  animation: modalSlideIn 0.3s ease-out;
+  animation: modal-slide-in 0.3s ease-out;
   
-  @keyframes modalSlideIn {
+  @keyframes modal-slide-in {
     from {
       transform: scale(0.9) translateY(-20px);
       opacity: 0;
@@ -102,64 +130,38 @@
     border-width: var(--border-width-2);
     box-shadow: var(--shadow-xl), 0 0 0 1px var(--color-border);
   }
-}
-
-// =============================================================================
-// MODAL SIZES
-// =============================================================================
-
-// Small modal
-.modal--small .modalContent {
-  max-width: 400px;
   
-  @include mobile-only {
-    max-width: 90vw;
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--color-surface-secondary);
+    border-radius: var(--border-radius-full);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--border-radius-full);
+    
+    &:hover {
+      background: var(--color-text-secondary);
+    }
+  }
+  
+  // Firefox scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-surface-secondary);
+  
+  // Ensure content is accessible to screen readers
+  &:focus-within {
+    outline: none; // Remove default outline, rely on focus trapping
   }
 }
 
-// Medium modal (default)
-.modal--medium .modalContent {
-  max-width: 600px;
-  
-  @include mobile-only {
-    max-width: 95vw;
-  }
-}
-
-// Large modal
-.modal--large .modalContent {
-  max-width: 800px;
-  
-  @include mobile-only {
-    max-width: 95vw;
-  }
-  
-  @include tablet-only {
-    max-width: 90vw;
-  }
-}
-
-// Fullscreen modal
-.modal--fullscreen .modalContent {
-  max-width: 95vw;
-  max-height: 95vh;
-  width: 95vw;
-  height: 95vh;
-  
-  @include mobile-only {
-    max-width: 100vw;
-    max-height: 100vh;
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-  }
-}
-
-// =============================================================================
-// MODAL CLOSE BUTTON
-// =============================================================================
-
-.modalClose {
+// Modal close button
+.modal__close {
   position: absolute;
   top: var(--spacing-md);
   right: var(--spacing-md);
@@ -186,6 +188,7 @@
   &:focus-visible {
     outline: var(--border-width-2) solid var(--color-focus);
     outline-offset: var(--focus-ring-offset);
+    z-index: calc(var(--z-index-modal) + 2);
   }
   
   &:active {
@@ -207,11 +210,8 @@
   }
 }
 
-// =============================================================================
-// MODAL HEADER
-// =============================================================================
-
-.modalHeader {
+// Modal header section
+.modal__header {
   padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
   border-bottom: var(--border-width-1) solid var(--color-border);
   margin-bottom: var(--spacing-lg);
@@ -222,7 +222,8 @@
   }
 }
 
-.modalTitle {
+// Modal title
+.modal__title {
   font-size: var(--text-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
@@ -236,11 +237,8 @@
   }
 }
 
-// =============================================================================
-// MODAL BODY
-// =============================================================================
-
-.modalBody {
+// Modal body content
+.modal__body {
   padding: var(--spacing-lg);
   
   @include mobile-only {
@@ -248,8 +246,62 @@
   }
   
   // Remove top padding if there's a header
-  .modalHeader + & {
+  .modal__header + & {
     padding-top: 0;
+  }
+}
+
+// =============================================================================
+// MODAL SIZE MODIFIERS - Using @each loop
+// =============================================================================
+
+@each $size, $props in $modal-sizes {
+  .modal--#{$size} {
+    .modal__content {
+      @if map.has-key($props, max-width) {
+        max-width: map.get($props, max-width);
+      }
+      
+      @if map.has-key($props, max-height) {
+        max-height: map.get($props, max-height);
+      }
+      
+      @if map.has-key($props, width) {
+        width: map.get($props, width);
+      }
+      
+      @if map.has-key($props, height) {
+        height: map.get($props, height);
+      }
+      
+      @include mobile-only {
+        @if map.has-key($props, mobile-max-width) {
+          max-width: map.get($props, mobile-max-width);
+        }
+        
+        @if map.has-key($props, mobile-max-height) {
+          max-height: map.get($props, mobile-max-height);
+        }
+        
+        @if map.has-key($props, mobile-width) {
+          width: map.get($props, mobile-width);
+        }
+        
+        @if map.has-key($props, mobile-height) {
+          height: map.get($props, mobile-height);
+        }
+        
+        @if map.has-key($props, mobile-border-radius) {
+          border-radius: map.get($props, mobile-border-radius);
+        }
+      }
+      
+      @if map.has-key($props, tablet-max-width) {
+        @include tablet-only {
+          max-width: map.get($props, tablet-max-width);
+        }
+      }
+    }
   }
 }
 
@@ -257,27 +309,14 @@
 // ACCESSIBILITY ENHANCEMENTS
 // =============================================================================
 
-// Focus improvements for keyboard navigation
-.modalClose:focus-visible {
-  z-index: calc(var(--z-index-modal) + 2);
-}
-
-// Screen reader improvements
-.modalContent {
-  // Ensure content is accessible to screen readers
-  &:focus-within {
-    outline: none; // Remove default outline, rely on focus trapping
-  }
-}
-
 // High contrast mode specific adjustments
 @include high-contrast {
-  .modalContent {
+  .modal__content {
     background: var(--color-background);
     border-color: var(--color-text);
   }
   
-  .modalClose {
+  .modal__close {
     background: var(--color-background);
     border-color: var(--color-text);
     color: var(--color-text);
@@ -288,7 +327,7 @@
     }
   }
   
-  .modalHeader {
+  .modal__header {
     border-color: var(--color-text);
   }
 }
@@ -302,11 +341,11 @@
     animation: none;
   }
   
-  .modalContent {
+  .modal__content {
     animation: none;
   }
   
-  .modalClose {
+  .modal__close {
     &:hover,
     &:active {
       transform: none;
@@ -325,30 +364,29 @@
 }
 
 // =============================================================================
-// SCROLLBAR STYLING FOR MODAL CONTENT
+// LEGACY SUPPORT - Remove these after updating component JSX
 // =============================================================================
 
+.modalOverlay {
+  @extend .modal__overlay;
+}
+
 .modalContent {
-  // Custom scrollbar for better UX
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: var(--color-surface-secondary);
-    border-radius: var(--border-radius-full);
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: var(--border-radius-full);
-    
-    &:hover {
-      background: var(--color-text-secondary);
-    }
-  }
-  
-  // Firefox scrollbar
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) var(--color-surface-secondary);
+  @extend .modal__content;
+}
+
+.modalClose {
+  @extend .modal__close;
+}
+
+.modalHeader {
+  @extend .modal__header;
+}
+
+.modalTitle {
+  @extend .modal__title;
+}
+
+.modalBody {
+  @extend .modal__body;
 }

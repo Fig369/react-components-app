@@ -59,7 +59,11 @@ src/
 │   ├── Modal/           # Accessible modal dialogs
 │   ├── Nav/             # Navigation component
 │   ├── Section/         # Content section wrapper
-│   ├── TeamSalesChart/  # Interactive sales dashboard
+│   ├── TeamSalesChart/  # Interactive sales dashboard (modular architecture)
+│   │   ├── components/  # Sub-components for smart avatars and chart elements
+│   │   ├── data/        # Team member data and avatar utilities
+│   │   ├── constants/   # Chart configuration and color schemes
+│   │   └── TeamSalesChart.jsx # Main component
 │   └── ThemeToggle/     # Theme switching component
 ├── config/              # Application configuration
 │   ├── company.js       # Company information
@@ -103,8 +107,12 @@ src/
   - **Chart Export**: High-quality PNG export with responsive sizing and PDF reports
   - **Performance Colors**: Dynamic color coding based on target achievement
   - **Responsive Charts**: Optimized viewing across all device sizes
+  - **Modular Architecture**: Separated into reusable sub-components and data modules
 - **Team Analytics**: Performance visualization with color-coded indicators and detailed member profiles
-- **Image Optimization**: WebP conversion with smart fallbacks and preloading
+- **Smart Image System**: 
+  - **WebP Optimization**: Automatic conversion with smart fallbacks
+  - **Smart Avatar Component**: Intelligent image loading with fallback to generated avatars
+  - **Performance Preloading**: Priority-based image loading for critical images
 - **Form Demos**: Comprehensive form field examples with validation
 
 ### Accessibility Features

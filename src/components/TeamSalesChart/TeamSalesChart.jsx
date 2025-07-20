@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useThemeColors, useModalState } from '../../hooks';
-import { useOptimizedImage } from '../../hooks/useOptimizedImage';
 import Chart from '../Chart';
 import Button from '../Button';
 import Modal from '../Modal';
@@ -24,255 +23,14 @@ import {
 import { FiRefreshCw, FiBarChart, FiTrendingUp, FiTarget, FiDollarSign, FiMail, FiLinkedin, FiMapPin, FiDownload, FiActivity, FiFileText, FiArrowUp, FiArrowDown, FiUser } from 'react-icons/fi';
 import styles from './TeamSalesChart.module.scss';
 
-// Generate optimized avatar URLs for different screen sizes
-const generateAvatarUrl = (name, background, size = 48) => {
-  const encodedName = encodeURIComponent(name);
-  return `https://ui-avatars.com/api/?name=${encodedName}&background=${background}&color=ffffff&size=${size}&bold=true&format=webp`;
-};
+// Components
+import { SmartAvatar } from './components/SmartAvatar';
 
-// Generate avatar sources for responsive images
-const generateAvatarSources = (name, background) => ({
-  small: generateAvatarUrl(name, background, 48),   // Mobile
-  medium: generateAvatarUrl(name, background, 64),  // Tablet
-  large: generateAvatarUrl(name, background, 96),   // Desktop
-  xlarge: generateAvatarUrl(name, background, 128)  // High DPI
-});
+// Data and constants
+import { TEAM_MEMBERS } from './data/teamMembers';
 
-// Complete team member data with all details
-const TEAM_MEMBERS = [
-  {
-    user: "USR001",
-    email: "jay.figueroa@company.com",
-    linkedin: "https://www.linkedin.com/in/jayfig89/",
-    imgUrl: "/optimized/JayFig.webp",
-    useOptimizedImage: true,
-    optimizedImageName: "JayFig",
-    avatarSources: generateAvatarSources("Jay Figueroa", "3b82f6"),
-    firstName: "Jay",
-    lastName: "Figueroa",
-    birthday: "1985-03-15",
-    role: "Senior Sales Manager",
-    region: "North America",
-    bio: "Experienced sales professional with over 8 years in B2B software solutions. Passionate about building lasting client relationships and exceeding targets."
-  },
-  {
-    user: "USR002",
-    email: "michael.chen@company.com",
-    linkedin: "https://linkedin.com/in/michael-chen-tech",
-    imgUrl: generateAvatarUrl("Michael Chen", "10b981", 48),
-    avatarSources: generateAvatarSources("Michael Chen", "10b981"),
-    firstName: "Michael",
-    lastName: "Chen",
-    birthday: "1990-07-22",
-    role: "Account Executive",
-    region: "Asia Pacific",
-    bio: "Dynamic sales professional specializing in enterprise solutions. Fluent in English, Mandarin, and Japanese with strong technical background."
-  },
-  {
-    user: "USR003",
-    email: "emma.rodriguez@company.com",
-    linkedin: "https://linkedin.com/in/emma-rodriguez-sales",
-    imgUrl: generateAvatarUrl("Emma Rodriguez", "f59e0b", 48),
-    avatarSources: generateAvatarSources("Emma Rodriguez", "f59e0b"),
-    firstName: "Emma",
-    lastName: "Rodriguez",
-    birthday: "1988-11-08",
-    role: "Regional Sales Director",
-    region: "Europe",
-    bio: "Strategic sales leader with expertise in market expansion and team development. Successfully launched products in 12+ European markets."
-  },
-  {
-    user: "USR004",
-    email: "james.williams@company.com",
-    linkedin: "https://linkedin.com/in/james-williams-sales",
-    imgUrl: generateAvatarUrl("James Williams", "8b5cf6", 48),
-    avatarSources: generateAvatarSources("James Williams", "8b5cf6"),
-    firstName: "James",
-    lastName: "Williams",
-    birthday: "1982-05-30",
-    role: "VP of Sales",
-    region: "Global",
-    bio: "Visionary sales executive with 15+ years experience scaling revenue from startup to IPO. Expert in building high-performing sales organizations."
-  },
-  {
-    user: "USR005",
-    email: "priya.patel@company.com",
-    linkedin: "https://linkedin.com/in/priya-patel-business",
-    imgUrl: generateAvatarUrl("Priya Patel", "ef4444", 48),
-    avatarSources: generateAvatarSources("Priya Patel", "ef4444"),
-    firstName: "Priya",
-    lastName: "Patel",
-    birthday: "1993-09-12",
-    role: "Business Development Rep",
-    region: "North America",
-    bio: "Energetic BDR with a knack for identifying new opportunities and qualifying prospects. Strong background in SaaS and fintech industries."
-  },
-  {
-    user: "USR006",
-    email: "carlos.mendoza@company.com",
-    linkedin: "https://linkedin.com/in/carlos-mendoza-sales",
-    imgUrl: generateAvatarUrl("Carlos Mendoza", "06b6d4", 48),
-    avatarSources: generateAvatarSources("Carlos Mendoza", "06b6d4"),
-    firstName: "Carlos",
-    lastName: "Mendoza",
-    birthday: "1987-01-25",
-    role: "Enterprise Account Manager",
-    region: "Latin America",
-    bio: "Bilingual sales professional specializing in Fortune 500 accounts. Expert in complex deal structuring and stakeholder management."
-  },
-  {
-    user: "USR007",
-    email: "lisa.kim@company.com",
-    linkedin: "https://linkedin.com/in/lisa-kim-sales",
-    imgUrl: generateAvatarUrl("Lisa Kim", "ec4899", 48),
-    avatarSources: generateAvatarSources("Lisa Kim", "ec4899"),
-    firstName: "Lisa",
-    lastName: "Kim",
-    birthday: "1991-06-18",
-    role: "Inside Sales Representative",
-    region: "Asia Pacific",
-    bio: "Results-driven sales rep with expertise in SaaS solutions. Consistently exceeds quotas through strategic prospecting and relationship building."
-  },
-  {
-    user: "USR008",
-    email: "david.thompson@company.com",
-    linkedin: "https://linkedin.com/in/david-thompson-sales",
-    imgUrl: generateAvatarUrl("David Thompson", "84cc16", 48),
-    avatarSources: generateAvatarSources("David Thompson", "84cc16"),
-    firstName: "David",
-    lastName: "Thompson",
-    birthday: "1984-12-03",
-    role: "Sales Operations Manager",
-    region: "North America",
-    bio: "Data-driven sales operations expert focused on process optimization and sales enablement. Specializes in CRM implementation and analytics."
-  },
-  {
-    user: "USR009",
-    email: "maria.garcia@company.com",
-    linkedin: "https://linkedin.com/in/maria-garcia-sales",
-    imgUrl: generateAvatarUrl("Maria Garcia", "f97316", 48),
-    avatarSources: generateAvatarSources("Maria Garcia", "f97316"),
-    firstName: "Maria",
-    lastName: "Garcia",
-    birthday: "1989-04-14",
-    role: "Key Account Manager",
-    region: "Latin America",
-    bio: "Strategic account manager with deep expertise in enterprise software sales. Fluent in Spanish, English, and Portuguese."
-  },
-  {
-    user: "USR010",
-    email: "alex.anderson@company.com",
-    linkedin: "https://linkedin.com/in/alex-anderson-sales",
-    imgUrl: generateAvatarUrl("Alex Anderson", "6366f1", 48),
-    avatarSources: generateAvatarSources("Alex Anderson", "6366f1"),
-    firstName: "Alex",
-    lastName: "Anderson",
-    birthday: "1992-08-27",
-    role: "Sales Development Rep",
-    region: "Europe",
-    bio: "Ambitious SDR with strong prospecting skills and passion for technology sales. Excellent at qualifying leads and setting appointments."
-  }
-];
 
-// Smart Avatar Component that uses optimized images with accessibility and performance features
-const SmartAvatar = ({ member, size = 48, className = "", priority = false, ...props }) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
-  // Determine loading priority based on context and size
-  const isEager = priority || size >= 80; // Larger images or priority images load eagerly
-  
-  const optimizedImage = useOptimizedImage(member.optimizedImageName || '', {
-    sizes: `(max-width: 768px) ${Math.min(size, 48)}px, ${size}px`,
-    eager: isEager,
-    fallbackFormat: 'png'
-  });
 
-  // Use optimized image if available, supported, and not errored
-  const shouldUseOptimized = member.useOptimizedImage && 
-                           optimizedImage.src && 
-                           !optimizedImage.isLoading && 
-                           !imageError &&
-                           optimizedImage.src !== `/images/${member.optimizedImageName}.png`; // Don't use fallback path
-  
-  const handleImageError = (event) => {
-    console.warn(`Failed to load optimized image for ${member.firstName} ${member.lastName}:`, {
-      src: event.target.src,
-      naturalWidth: event.target.naturalWidth,
-      naturalHeight: event.target.naturalHeight,
-      error: 'Image load failed'
-    });
-    setImageError(true);
-  };
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
-  // Enhanced alt text for accessibility
-  const altText = `Profile photo of ${member.firstName} ${member.lastName}, ${member.role}`;
-
-  if (shouldUseOptimized) {
-    return (
-      <img
-        src={optimizedImage.src}
-        srcSet={optimizedImage.srcSet}
-        sizes={optimizedImage.sizes}
-        alt={altText}
-        width={size}
-        height={size}
-        loading={isEager ? "eager" : "lazy"}
-        decoding="async"
-        className={className}
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          borderRadius: '50%',
-          objectFit: 'cover',
-          opacity: imageLoaded ? 1 : 0.7,
-          transition: 'opacity 0.2s ease-in-out',
-          backgroundColor: '#f3f4f6', // Neutral background while loading
-          ...props.style
-        }}
-        {...props}
-      />
-    );
-  }
-
-  // Fallback to generated avatar with performance optimization
-  const avatarUrl = member.avatarSources ? 
-    (size <= 48 ? member.avatarSources.small :
-     size <= 64 ? member.avatarSources.medium :
-     size <= 96 ? member.avatarSources.large :
-     member.avatarSources.xlarge) :
-    generateAvatarUrl(`${member.firstName} ${member.lastName}`, "3b82f6", size);
-
-  return (
-    <img
-      src={avatarUrl}
-      alt={`Generated avatar for ${member.firstName} ${member.lastName}, ${member.role}`}
-      width={size}
-      height={size}
-      loading={isEager ? "eager" : "lazy"}
-      decoding="async"
-      className={className}
-      onLoad={handleImageLoad}
-      style={{
-        width: `${size}px`,
-        height: `${size}px`,
-        borderRadius: '50%',
-        objectFit: 'cover',
-        opacity: imageLoaded ? 1 : 0.7,
-        transition: 'opacity 0.2s ease-in-out',
-        backgroundColor: '#f3f4f6',
-        ...props.style
-      }}
-      {...props}
-    />
-  );
-};
 
 const TeamSalesChart = () => {
   const [salesData, setSalesData] = useState(() => getSalesData());
@@ -593,9 +351,9 @@ const TeamSalesChart = () => {
         
         console.log(`Exporting chart at ${exportOptions.width}x${exportOptions.height} for ${isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'} optimization`);
         
-        const result = chartRef.current.exportToPNG(filename, exportOptions);
+        const success = chartRef.current.exportToPNG(filename, exportOptions);
         
-        if (!result) {
+        if (!success) {
           // Fallback: show user-friendly message
           alert('Export failed. Please ensure the chart is fully loaded and try again.');
         }
@@ -821,11 +579,11 @@ const TeamSalesChart = () => {
                 const memberSales = salesData[member.user];
                 const performance = memberSales ? (memberSales.currentMonth / memberSales.target) * 100 : 0;
                 const performanceClass = performance >= 100 ? 'excellent' : 
-                                       performance >= 90 ? 'good' : 
-                                       performance >= 70 ? 'fair' : 'needs-improvement';
+                                        performance >= 90 ? 'good' : 
+                                        performance >= 70 ? 'fair' : 'needs-improvement';
                 const performanceText = performance >= 100 ? 'Exceeding Target' : 
-                                       performance >= 90 ? 'Close to Target' : 
-                                       performance >= 70 ? 'Moderate Performance' : 'Needs Improvement';
+                                        performance >= 90 ? 'Close to Target' : 
+                                        performance >= 70 ? 'Moderate Performance' : 'Needs Improvement';
                 
                 // Choose the best image source for PDF
                 const avatarSrc = member.useOptimizedImage && member.imgUrl ? 
@@ -902,7 +660,7 @@ const TeamSalesChart = () => {
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={styles['team-sales-chart']}>
       <Card variant="bordered" elevation="medium">
         <CardHeader>
           <CardTitle>Sales Overview</CardTitle>
@@ -913,81 +671,61 @@ const TeamSalesChart = () => {
 
         <CardBody>
           {/* Summary Statistics */}
-          <div className={styles.summaryGrid}>
-            <div className={styles.summaryCard}>
-              <div className={styles.summaryIcon}>
+          <div className={styles['team-sales-chart__summary-grid']}>
+            <div className={styles['summary-card']}>
+              <div className={styles['summary-card__icon']}>
                 <FiDollarSign />
               </div>
-              <div className={styles.summaryContent}>
-                <div className={styles.summaryValue}>
+              <div className={styles['summary-card__content']}>
+                <div className={styles['summary-card__value']}>
                   {formatCurrency(summary.totalCurrentMonth)}
                 </div>
-                <div className={styles.summaryLabel}>Total Current Month</div>
+                <div className={styles['summary-card__label']}>Total Current Month</div>
               </div>
             </div>
 
-            <div className={styles.summaryCard}>
-              <div className={styles.summaryIcon}>
+            <div className={styles['summary-card']}>
+              <div className={styles['summary-card__icon']}>
                 <FiTarget />
               </div>
-              <div className={styles.summaryContent}>
-                <div className={styles.summaryValue}>
+              <div className={styles['summary-card__content']}>
+                <div className={styles['summary-card__value']}>
                   {formatPercentage(summary.currentMonthPerformance)}
                 </div>
-                <div className={styles.summaryLabel}>Target Achievement</div>
+                <div className={styles['summary-card__label']}>Target Achievement</div>
               </div>
             </div>
 
-            <div className={styles.summaryCard}>
-              <div className={styles.summaryIcon}>
+            <div className={styles['summary-card']}>
+              <div className={styles['summary-card__icon']}>
                 <FiTrendingUp />
               </div>
-              <div className={styles.summaryContent}>
-                <div className={styles.summaryValue}>
+              <div className={styles['summary-card__content']}>
+                <div className={styles['summary-card__value']}>
                   {summary.monthOverMonth > 0 ? '+' : ''}{formatPercentage(summary.monthOverMonth)}
                 </div>
-                <div className={styles.summaryLabel}>Month over Month</div>
+                <div className={styles['summary-card__label']}>Month over Month</div>
               </div>
             </div>
 
-            <div className={styles.summaryCard}>
-              <div className={styles.summaryIcon}>
+            <div className={styles['summary-card']}>
+              <div className={styles['summary-card__icon']}>
                 <FiBarChart />
               </div>
-              <div className={styles.summaryContent}>
-                <div className={styles.summaryValue}>
+              <div className={styles['summary-card__content']}>
+                <div className={styles['summary-card__value']}>
                   {formatCurrency(summary.totalYTD)}
                 </div>
-                <div className={styles.summaryLabel}>Year to Date</div>
+                <div className={styles['summary-card__label']}>Year to Date</div>
               </div>
             </div>
           </div>
 
-          {/* Metric Selection */}
-          <div className={styles.metricControls}>
-            <h4>Metrics Selection</h4>
-            <div className={styles.metricButtons}>
-              {metricOptions.map(({ key, label, icon: Icon }) => (
-                <Button
-                  key={key}
-                  variant={selectedMetrics.includes(key) ? 'primary' : 'outline'}
-                  size="small"
-                  onClick={() => handleMetricToggle(key)}
-                  leftIcon={<Icon aria-hidden="true" />}
-                  className={styles.metricButton}
-                  aria-pressed={selectedMetrics.includes(key)}
-                  data-seo-element={`metric-${key}`}
-                >
-                  <span className={styles.buttonText}>{label}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
 
           {/* Action Buttons */}
-          <div className={styles.actionControls}>
+          <div className={styles['team-sales-chart__controls']}>
             <h4>Data Actions</h4>
-            <div className={styles.actionButtons}>
+            <div className={styles['team-sales-chart__control-buttons']}>
               <Button
                 variant="secondary"
                 size="small"
@@ -1004,13 +742,13 @@ const TeamSalesChart = () => {
                 size="small"
                 onClick={handleGenerateRandomData}
                 disabled={isGenerating}
-                leftIcon={<FiRefreshCw aria-hidden="true" className={isGenerating ? styles.spinningIcon : ''} />}
+                leftIcon={<FiRefreshCw aria-hidden="true" className={isGenerating ? styles['team-sales-chart__spinning-icon'] : ''} />}
                 data-seo-element="generate-data-button"
                 aria-describedby="generate-desc"
                 aria-busy={isGenerating}
-                className={isGenerating ? styles.loadingButton : ''}
+                className={isGenerating ? styles['team-sales-chart__control-button--loading'] : ''}
               >
-                <span className={isGenerating ? styles.loadingText : styles.buttonText}>
+                <span className={isGenerating ? styles['team-sales-chart__loading-text'] : styles['team-sales-chart__button-text']}>
                   {isGenerating ? 'Generating New Data...' : 'Generate Random Data'}
                 </span>
               </Button>
@@ -1040,41 +778,62 @@ const TeamSalesChart = () => {
           </div>
 
           {/* Chart Type Controls */}
-          <div className={styles.chartTypeControls}>
+          <div className={styles['team-sales-chart__controls']}>
             <h4>Chart Type</h4>
-            <div className={styles.chartTypeButtons}>
+            <div className={styles['team-sales-chart__control-buttons']}>
               <Button
                 variant={chartType === 'bar' ? 'primary' : 'outline'}
                 size="small"
                 onClick={() => setChartType('bar')}
                 leftIcon={<FiBarChart aria-hidden="true" />}
-                className={styles.chartTypeButton}
+                className={styles['team-sales-chart__control-button']}
                 aria-pressed={chartType === 'bar'}
                 data-seo-element="bar-chart-button"
               >
-                <span className={styles.buttonText}>Bar Chart</span>
+                <span className={styles['team-sales-chart__button-text']}>Bar Chart</span>
               </Button>
               <Button
                 variant={chartType === 'line' ? 'primary' : 'outline'}
                 size="small"
                 onClick={() => setChartType('line')}
                 leftIcon={<FiActivity aria-hidden="true" />}
-                className={styles.chartTypeButton}
+                className={styles['team-sales-chart__control-button']}
                 aria-pressed={chartType === 'line'}
                 data-seo-element="line-chart-button"
               >
-                <span className={styles.buttonText}>Line Chart</span>
+                <span className={styles['team-sales-chart__button-text']}>Line Chart</span>
               </Button>
             </div>
           </div>
 
+          {/* Metric Selection */}
+          <div className={styles['team-sales-chart__controls']}>
+            <h4>Metrics Selection</h4>
+            <div className={styles['team-sales-chart__control-buttons']}>
+              {metricOptions.map(({ key, label, icon: Icon }) => (
+                <Button
+                  key={key}
+                  variant={selectedMetrics.includes(key) ? 'primary' : 'outline'}
+                  size="small"
+                  onClick={() => handleMetricToggle(key)}
+                  leftIcon={<Icon aria-hidden="true" />}
+                  className={styles['team-sales-chart__control-button']}
+                  aria-pressed={selectedMetrics.includes(key)}
+                  data-seo-element={`metric-${key}`}
+                >
+                  <span className={styles['team-sales-chart__button-text']}>{label}</span>
+                </Button>
+              ))}
+            </div>
+          </div>
+
           {/* Chart Sorting Controls */}
-          <div className={styles.sortingControls}>
+          <div className={styles['team-sales-chart__controls']}>
             <h4 id="sorting-controls-heading">Data Sorting</h4>
-            <p className={styles.sortingDescription}>
+            <p className={styles['team-sales-chart__sorting-description']}>
               Sort chart data by team member names or performance values in ascending or descending order
             </p>
-            <div className={styles.sortingButtons} role="group" aria-labelledby="sorting-controls-heading">
+            <div className={styles['team-sales-chart__control-buttons']} role="group" aria-labelledby="sorting-controls-heading">
               <Button
                 variant={sortConfig.key === 'name' ? 'success' : 'outline'}
                 size="small"
@@ -1084,13 +843,13 @@ const TeamSalesChart = () => {
                 rightIcon={sortConfig.key === 'name' ? 
                   (sortConfig.direction === 'asc' ? <FiArrowUp aria-hidden="true" /> : <FiArrowDown aria-hidden="true" />) : 
                   null}
-                className={styles.sortButton}
+                className={styles['team-sales-chart__control-button']}
                 aria-pressed={sortConfig.key === 'name'}
                 aria-describedby="sort-name-desc"
                 data-seo-element="sort-by-name-button"
                 tabIndex={0}
               >
-                <span className={styles.buttonText}>
+                <span className={styles['team-sales-chart__button-text']}>
                   Sort by Name {sortConfig.key === 'name' && `(${sortConfig.direction === 'asc' ? 'A-Z' : 'Z-A'})`}
                 </span>
               </Button>
@@ -1104,13 +863,13 @@ const TeamSalesChart = () => {
                 rightIcon={sortConfig.key !== 'name' ? 
                   (sortConfig.direction === 'asc' ? <FiArrowUp aria-hidden="true" /> : <FiArrowDown aria-hidden="true" />) : 
                   null}
-                className={styles.sortButton}
+                className={styles['team-sales-chart__control-button']}
                 aria-pressed={sortConfig.key !== 'name'}
                 aria-describedby="sort-value-desc"
                 data-seo-element="sort-by-value-button"
                 tabIndex={0}
               >
-                <span className={styles.buttonText}>
+                <span className={styles['team-sales-chart__button-text']}>
                   Sort by {getMetricLabel(selectedMetrics[0] || 'currentMonth')} {sortConfig.key !== 'name' && `(${sortConfig.direction === 'asc' ? 'Low-High' : 'High-Low'})`}
                 </span>
               </Button>
@@ -1137,33 +896,8 @@ const TeamSalesChart = () => {
             </div>
           </div>
 
-          {/* Performance Legend (only show for current month) */}
-          {selectedMetrics.includes('currentMonth') && (
-            <div className={styles.performanceLegend}>
-              <h4>Performance Levels</h4>
-              <div className={styles.legendItems}>
-                <div className={styles.legendItem}>
-                  <div className={styles.legendColor} style={{ backgroundColor: 'rgba(34, 197, 94, 0.8)' }}></div>
-                  <span>🎯 Exceeding Target (100%+)</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <div className={styles.legendColor} style={{ backgroundColor: 'rgba(59, 130, 246, 0.8)' }}></div>
-                  <span>📈 Close to Target (90%+)</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <div className={styles.legendColor} style={{ backgroundColor: 'rgba(245, 158, 11, 0.8)' }}></div>
-                  <span>⚠️ Moderate Performance (70%+)</span>
-                </div>
-                <div className={styles.legendItem}>
-                  <div className={styles.legendColor} style={{ backgroundColor: 'rgba(239, 68, 68, 0.8)' }}></div>
-                  <span>🔴 Needs Improvement (&lt;70%)</span>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Chart Display */}
-          <div className={styles.chartContainer}>
+          <div className={styles['team-sales-chart__chart-container']}>
             <Chart
               ref={chartRef}
               data={chartData}
@@ -1173,10 +907,35 @@ const TeamSalesChart = () => {
             />
           </div>
 
+          {/* Performance Legend (only show for current month) */}
+          {selectedMetrics.includes('currentMonth') && (
+            <div className={styles['team-sales-chart__performance-legend']}>
+              <h4>Performance Levels</h4>
+              <div className={styles['team-sales-chart__legend-items']}>
+                <div className={styles['team-sales-chart__legend-item']}>
+                  <div className={styles['team-sales-chart__legend-color']} style={{ backgroundColor: 'rgba(34, 197, 94, 0.8)' }}></div>
+                  <span>🎯 Exceeding Target (100%+)</span>
+                </div>
+                <div className={styles['team-sales-chart__legend-item']}>
+                  <div className={styles['team-sales-chart__legend-color']} style={{ backgroundColor: 'rgba(59, 130, 246, 0.8)' }}></div>
+                  <span>📈 Close to Target (90%+)</span>
+                </div>
+                <div className={styles['team-sales-chart__legend-item']}>
+                  <div className={styles['team-sales-chart__legend-color']} style={{ backgroundColor: 'rgba(245, 158, 11, 0.8)' }}></div>
+                  <span>⚠️ Moderate Performance (70%+)</span>
+                </div>
+                <div className={styles['team-sales-chart__legend-item']}>
+                  <div className={styles['team-sales-chart__legend-color']} style={{ backgroundColor: 'rgba(239, 68, 68, 0.8)' }}></div>
+                  <span>🔴 Needs Improvement (&lt;70%)</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Team Member List */}
-          <div className={styles.teamList}>
-            <h3 className={styles.teamListTitle}>Team Members - Click to View Details</h3>
-            <div className={styles.memberGrid}>
+          <div className={styles['team-sales-chart__team-list']}>
+            <h3 className={styles['team-sales-chart__team-list-title']}>Team Members - Click to View Details</h3>
+            <div className={styles['team-sales-chart__member-grid']}>
               {sortedTeamMembers.map((member) => {
                 const memberSales = salesData[member.user];
                 const performance = memberSales ? (memberSales.currentMonth / memberSales.target) * 100 : 0;
@@ -1184,7 +943,7 @@ const TeamSalesChart = () => {
                 return (
                   <button
                     key={member.user}
-                    className={styles.memberCard}
+                    className={styles['member-card']}
                     onClick={() => {
                       setSelectedMember(member);
                       openModal();
@@ -1192,22 +951,22 @@ const TeamSalesChart = () => {
                     aria-label={`View details for ${member.firstName} ${member.lastName}, ${member.role}`}
                     data-seo-element={`team-member-${member.user}`}
                   >
-                    <div className={styles.memberAvatar}>
+                    <div className={styles['member-card__avatar']}>
                       <SmartAvatar
                         member={member}
                         size={48}
-                        className={styles.avatarImage}
+                        className={styles['member-card__avatar-image']}
                         priority={member.user === "USR001"} // Jay Figueroa gets priority loading
                       />
                     </div>
-                    <div className={styles.memberInfo}>
-                      <div className={styles.memberName}>
+                    <div className={styles['member-card__info']}>
+                      <div className={styles['member-card__name']}>
                         {member.firstName} {member.lastName}
                       </div>
-                      <div className={styles.memberRole}>{member.role}</div>
-                      <div className={styles.memberSales}>
+                      <div className={styles['member-card__role']}>{member.role}</div>
+                      <div className={styles['member-card__sales']}>
                         {formatCurrency(memberSales?.currentMonth || 0)}
-                        <span className={styles.memberPerformance} data-performance={performance >= 100 ? 'good' : performance >= 90 ? 'ok' : 'low'}>
+                        <span className={styles['member-card__performance']} data-performance={performance >= 100 ? 'good' : performance >= 90 ? 'ok' : 'low'}>
                           {formatPercentage(performance)}
                         </span>
                       </div>
@@ -1247,21 +1006,21 @@ const TeamSalesChart = () => {
         {selectedMember && (
           <Card variant="elevated" elevation="high">
             <CardHeader>
-              <div className={styles.memberHeader}>
-                <div className={styles.modalAvatar}>
+              <div className={styles['member-detail__header']}>
+                <div className={styles['member-detail__avatar']}>
                   <SmartAvatar
                     member={selectedMember}
                     size={80}
-                    className={styles.modalAvatarImage}
+                    className={styles['member-detail__avatar-image']}
                     priority={true} // Modal images are priority
                   />
                 </div>
-                <div className={styles.memberTitleInfo}>
+                <div className={styles['member-detail__title-info']}>
                   <CardTitle>
                     {selectedMember.firstName} {selectedMember.lastName}
                   </CardTitle>
                   <CardText>{selectedMember.role}</CardText>
-                  <div className={styles.memberLocation}>
+                  <div className={styles['member-detail__location']}>
                     <FiMapPin aria-hidden="true" />
                     {selectedMember.region}
                   </div>
@@ -1270,54 +1029,54 @@ const TeamSalesChart = () => {
             </CardHeader>
 
             <CardBody>
-              <div className={styles.memberDetails}>
+              <div className={styles['member-detail__details']}>
                 {/* Sales Performance */}
-                <div className={styles.performanceSection}>
+                <div className={styles['member-detail__section']}>
                   <h4>Sales Performance</h4>
-                  <div className={styles.performanceGrid}>
-                    <div className={styles.performanceCard}>
-                      <div className={styles.performanceValue}>
+                  <div className={styles['member-detail__performance-grid']}>
+                    <div className={styles['member-detail__performance-card']}>
+                      <div className={styles['member-detail__performance-value']}>
                         {formatCurrency(salesData[selectedMember.user]?.currentMonth || 0)}
                       </div>
-                      <div className={styles.performanceLabel}>Current Month</div>
+                      <div className={styles['member-detail__performance-label']}>Current Month</div>
                     </div>
-                    <div className={styles.performanceCard}>
-                      <div className={styles.performanceValue}>
+                    <div className={styles['member-detail__performance-card']}>
+                      <div className={styles['member-detail__performance-value']}>
                         {formatCurrency(salesData[selectedMember.user]?.target || 0)}
                       </div>
-                      <div className={styles.performanceLabel}>Monthly Target</div>
+                      <div className={styles['member-detail__performance-label']}>Monthly Target</div>
                     </div>
-                    <div className={styles.performanceCard}>
-                      <div className={styles.performanceValue}>
+                    <div className={styles['member-detail__performance-card']}>
+                      <div className={styles['member-detail__performance-value']}>
                         {salesData[selectedMember.user] ? 
                           formatPercentage((salesData[selectedMember.user].currentMonth / salesData[selectedMember.user].target) * 100) 
                           : '0%'
                         }
                       </div>
-                      <div className={styles.performanceLabel}>Achievement</div>
+                      <div className={styles['member-detail__performance-label']}>Achievement</div>
                     </div>
-                    <div className={styles.performanceCard}>
-                      <div className={styles.performanceValue}>
+                    <div className={styles['member-detail__performance-card']}>
+                      <div className={styles['member-detail__performance-value']}>
                         {formatCurrency(salesData[selectedMember.user]?.ytd || 0)}
                       </div>
-                      <div className={styles.performanceLabel}>Year to Date</div>
+                      <div className={styles['member-detail__performance-label']}>Year to Date</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Personal Information */}
-                <div className={styles.personalSection}>
+                <div className={styles['member-detail__section']}>
                   <h4>About</h4>
                   <CardText>{selectedMember.bio}</CardText>
                 </div>
 
                 {/* Contact Information */}
-                <div className={styles.contactSection}>
+                <div className={styles['member-detail__section']}>
                   <h4>Contact</h4>
-                  <div className={styles.contactInfo}>
+                  <div className={styles['member-detail__contact-info']}>
                     <a 
                       href={`mailto:${selectedMember.email}`}
-                      className={styles.contactLink}
+                      className={styles['member-detail__contact-link']}
                       aria-label={`Send email to ${selectedMember.firstName}`}
                       data-seo-element="email-link"
                     >
@@ -1328,7 +1087,7 @@ const TeamSalesChart = () => {
                       href={selectedMember.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={styles.contactLink}
+                      className={styles['member-detail__contact-link']}
                       aria-label={`View ${selectedMember.firstName}'s LinkedIn profile (opens in new tab)`}
                       data-seo-element="linkedin-link"
                     >
