@@ -38,6 +38,12 @@ const Nav = ({
   const firstMenuItemRef = useRef(null);
   const lastMenuItemRef = useRef(null);
 
+  // Ensure mobile menu is closed on mount
+  useEffect(() => {
+    setIsOpen(false);
+    document.body.style.overflow = '';
+  }, []);
+
   // Close mobile menu on escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -266,6 +272,10 @@ const Nav = ({
           <div 
             className={styles.mobileBackdrop}
             onClick={() => setIsOpen(false)}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              setIsOpen(false);
+            }}
             aria-hidden="true"
           />
         )}
