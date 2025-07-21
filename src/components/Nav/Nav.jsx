@@ -108,7 +108,8 @@ const Nav = ({
     }
   };
 
-  const toggleMenu = () => {
+  const toggleMenu = (e) => {
+    e.stopPropagation();
     setIsOpen(!isOpen);
     setActiveDropdown(null);
   };
@@ -253,7 +254,7 @@ const Nav = ({
           {/* Mobile Menu Button */}
           <button
             className={styles.mobileMenuButton}
-            onClick={toggleMenu}
+            onClick={(e) => toggleMenu(e)}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
@@ -272,10 +273,6 @@ const Nav = ({
           <div 
             className={styles.mobileBackdrop}
             onClick={() => setIsOpen(false)}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              setIsOpen(false);
-            }}
             aria-hidden="true"
           />
         )}
